@@ -35,8 +35,8 @@ Vnum{N, ES} = Sigmoid{N, ES, :ubit}
 Exact{N,ES} = Sigmoid{N, ES, :EXACT}
 ULP{N,ES} = Sigmoid{N, ES, :ULP}
 #trampoline their constructor against the Vnum constructor.
-(::Type{Exact{N,ES}}){N,ES}(n::Unsigned)::Vnum{N,ES} = iseven(n) ? Vnum{N,ES}(n) : throw(ArgumentError("Exact numbers must have an even int representation!"))
-(::Type{ULP{N,ES}}){N,ES}(n::Unsigned)::Vnum{N,ES}   = isodd(n) ? Vnum{N,ES}(n) : throw(ArgumentError("ULP numbers must have an odd int representation!"))
+#(::Type{Exact{N,ES}}){N,ES}(n::Unsigned)::Vnum{N,ES} = iseven(n) ? Vnum{N,ES}(n) : throw(ArgumentError("Exact numbers must have an even int representation!"))
+#(::Type{ULP{N,ES}}){N,ES}(n::Unsigned)::Vnum{N,ES}   = isodd(n) ? Vnum{N,ES}(n) : throw(ArgumentError("ULP numbers must have an odd int representation!"))
 
 struct Valid{N, ES} <: AbstractFloat
   lower::Vnum{N, ES}
