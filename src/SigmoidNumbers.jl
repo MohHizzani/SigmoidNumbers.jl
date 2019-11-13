@@ -18,23 +18,23 @@ module SigmoidNumbers
   include("Posits/convert.jl")
   include("Posits/mlfunctions.jl")
 
-  include("Valids/valids.jl")
+  # include("Valids/valids.jl")
 
-  include("Tools/fft.jl")
-  include("Tools/ubox.jl")
+  # include("Tools/fft.jl")
+  # include("Tools/ubox.jl")
 
-  include("quire.jl")
-  include("fdp-matrixsolve.jl")
-  include("quire_solve.jl")
+  # include("quire.jl")
+  # include("fdp-matrixsolve.jl")
+  # include("quire_solve.jl")
 
-  #patching julia's native lu factorization.
-  include("LUpatches.jl")
+  # #patching julia's native lu factorization.
+  # include("LUpatches.jl")
 
-  #including blas functions
-  include("BLAS/blas.jl")
-  include("BLAS/Level1.jl")
-  include("BLAS/Level2-er.jl")
-  include("BLAS/Level2-mv.jl")
-  include("BLAS/Level2-sv.jl")
+  # #including blas functions
+  # include("BLAS/blas.jl")
+  # include("BLAS/Level1.jl")
+  # include("BLAS/Level2-er.jl")
+  # include("BLAS/Level2-mv.jl")
+  # include("BLAS/Level2-sv.jl")
 
 end # module
