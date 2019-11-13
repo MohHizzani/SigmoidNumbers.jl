@@ -1,8 +1,8 @@
 
 import Base: bits, show
 
-bits{N, ES, mode}(x::Sigmoid{N, ES, mode}) = bits(reinterpret(@UInt, x))[1:N]
-function bits{N, ES, mode}(x::Sigmoid{N, ES, mode}, separator::AbstractString)
+bits(x::Sigmoid{N, ES, mode}) where {N, ES, mode} = bits(reinterpret(@UInt, x))[1:N]
+function bits(x::Sigmoid{N, ES, mode}, separator::AbstractString) where {N, ES, mode}
   #we're going to create this as a string array, then join() it at the end.
   stringarray = Vector{String}()
 
@@ -41,7 +41,7 @@ function bits{N, ES, mode}(x::Sigmoid{N, ES, mode}, separator::AbstractString)
   return join(stringarray, separator)
 end
 
-function show{N, ES, mode}(io::IO, x::Sigmoid{N, ES, mode})
+function show(io::IO, x::Sigmoid{N, ES, mode}) where {N, ES, mode}
 
   if mode == :ubit
     #cast to Exact or ULP, depending on what the number looks like.
@@ -67,7 +67,7 @@ function show{N, ES, mode}(io::IO, x::Sigmoid{N, ES, mode})
   end
 end
 
-@generated function show{N, ES, mode}(io::IO, ::Type{Sigmoid{N, ES, mode}})
+@generated function show(io::IO, ::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode}
   if (mode == :guess)
     sig = "{$N,$ES}"
     :(print(io, "Posit", $sig))
