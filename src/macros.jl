@@ -26,7 +26,7 @@ macro mask(N)
   :(((one(@UInt) << N) - one(@UInt)) << ((sizeof(@UInt) * 8) - N))
 end
 
-doc"""
+"""
   `SigmoidNumbers.@breakdown(S::Symbol, [:arithmetic | :numeric])`
 
   takes a small sigmoid number referenced by a symbol and creates in the containing
