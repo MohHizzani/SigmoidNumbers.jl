@@ -111,15 +111,15 @@ macro breakdown(args...)
 
       if (mode == :ubit)
         ($x_reg = min($x_reg, N - 3))
-        const __UB_mask = ((@signbit) >> (N - 1))
+        __UB_mask = ((@signbit) >> (N - 1))
       else
-        const __UB_mask = zero(@UInt)
+        __UB_mask = zero(@UInt)
       end
 
       $x_exp::Int = $x_reg * ($x_inv ? -1 : 1) * (1 << ES)
 
       if (ES != 0)
-        const __ES_mask = (1 << ES) - 1
+        __ES_mask = (1 << ES) - 1
         #it's OK if this is negative, yo.
         __ES_shift = __BITS - ES - 3 - $x_reg + $x_inv
 
