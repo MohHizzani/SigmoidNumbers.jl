@@ -35,8 +35,8 @@ Vnum{N, ES} = Sigmoid{N, ES, :ubit}
 Exact{N,ES} = Sigmoid{N, ES, :EXACT}
 ULP{N,ES} = Sigmoid{N, ES, :ULP}
 #trampoline their constructor against the Vnum constructor.
-Exact{N,ES}(n::Unsigned)::Vnum{N,ES} = iseven(n) ? Vnum{N,ES}(n) : throw(ArgumentError("Exact numbers must have an even int representation!"))
-ULP{N,ES}(n::Unsigned)::Vnum{N,ES}   = isodd(n) ? Vnum{N,ES}(n) : throw(ArgumentError("ULP numbers must have an odd int representation!"))
+Exact{N,ES}(n::Unsigned)::Vnum{N,ES} where {N,ES} = iseven(n) ? Vnum{N,ES}(n) : throw(ArgumentError("Exact numbers must have an even int representation!"))
+ULP{N,ES}(n::Unsigned)::Vnum{N,ES} where {N,ES}   = isodd(n) ? Vnum{N,ES}(n) : throw(ArgumentError("ULP numbers must have an odd int representation!"))
 
 struct Valid{N, ES} <: AbstractFloat
   lower::Vnum{N, ES}
@@ -49,8 +49,8 @@ end
 
 
 #create a tile constructor that builds a tile from a vnum.
-tile{N,ES}(x::Sigmoid{N,ES,:ubit}) = Valid{N,ES}(reinterpret(Vnum{N,ES},x), reinterpret(Vnum{N,ES},x))
-tile{N,ES}(x::Sigmoid{N,ES,:exact}) = Valid{N,ES}(reinterpret(Vnum{N,ES},x), reinterpret(Vnum{N,ES},x))
+tile(x::Sigmoid{N,ES,:ubit}) where {N,ES} = Valid{N,ES}(reinterpret(Vnum{N,ES},x), reinterpret(Vnum{N,ES},x))
+tile(x::Sigmoid{N,ES,:exact}) where {N,ES} = Valid{N,ES}(reinterpret(Vnum{N,ES},x), reinterpret(Vnum{N,ES},x))
 
 export Sigmoid, Posit, Vnum, Valid, Exact, ULP, →
 
