@@ -148,12 +148,12 @@ end
 
 #for test purposes
 
-function __numeric_breakdown_wrapper{N, ES, mode}(x::Sigmoid{N, ES, mode})
+function __numeric_breakdown_wrapper(x::Sigmoid{N, ES, mode}) where {N, ES, mode}
   @breakdown x numeric
   (x_sgn, x_inv, x_exp, x_frc, x_ubt)
 end
 
-function __arithmetic_breakdown_wrapper{N, ES, mode}(x::Sigmoid{N, ES, mode})
+function __arithmetic_breakdown_wrapper(x::Sigmoid{N, ES, mode}) where {N, ES, mode}
   @breakdown x arithmetic
   (x_sgn, x_inv, x_exp, x_frc, x_ubt)
 end
