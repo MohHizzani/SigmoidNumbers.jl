@@ -1,13 +1,14 @@
 #currently, matrix solve operations are on hold.
 
-doc"""
+
+@doc """
   SigmoidNumbers.get_unscaled_replacement_row!(rr, M, row, cache, quire)
 
   takes the matrix M and specifies a good "replacement row" for it.  You should
   also supply a cache vector which is used to store magic values, it should be
   the length of rr.
 """
-function get_unscaled_replacement_row!{T}(rr::Vector{T}, M::Matrix{T}, row, cached_coefficients::Vector{T}, quire)
+function get_unscaled_replacement_row!(rr::Vector{T}, M::Matrix{T}, row, cached_coefficients::Vector{T}, quire) where {T}
   l = length(rr)
 
   @assert(size(M) == (l, l))
@@ -49,7 +50,7 @@ function get_unscaled_replacement_row!{T}(rr::Vector{T}, M::Matrix{T}, row, cach
   nothing
 end
 
-function diminish_result_vector!{T}(v::Vector{T}, row, cached_coefficients::Vector{T}, quire)
+function diminish_result_vector!(v::Vector{T}, row, cached_coefficients::Vector{T}, quire) where {T}
   #alter the vector in the same fashion.
   set!(quire, v[row])
   res = zero(T)
@@ -60,7 +61,7 @@ function diminish_result_vector!{T}(v::Vector{T}, row, cached_coefficients::Vect
 end
 
 
-function rescale_row!{T}(M::Matrix{T}, row)
+function rescale_row!(M::Matrix{T}, row) where {T}
   value = M[row, row]
   for col = (row + 1):size(M,2)
     M[row,col] /= value
@@ -69,13 +70,13 @@ function rescale_row!{T}(M::Matrix{T}, row)
   value
 end
 
-doc"""
+@doc """
   SigmoidNumbers.row_echelon!(M, v)
 
   converts (M, v) matrix/vector into row-echelon form, with partial pivoting
   Uses quires.
 """
-function row_echelon!{T}(M::Matrix{T}, v::Vector{T}, quire = Quire(T))
+function row_echelon!(M::Matrix{T}, v::Vector{T}, quire = Quire(T)) where {T}
   eqs = length(v)
   @assert size(M) == (eqs, eqs)
   #convert to row-echelon form.
@@ -121,12 +122,12 @@ function row_echelon!{T}(M::Matrix{T}, v::Vector{T}, quire = Quire(T))
   (M, v)
 end
 
-doc"""
+@doc """
   SigmoidNumbers.solve_row_echelon!(result, M, v, quire)
 
   solves a system of linear equations that's in row-echelon form.
 """
-function solve_row_echelon!{T}(result::Vector{T}, M::Matrix{T}, v::Vector{T}, quire = Quire(T))
+function solve_row_echelon!(result::Vector{T}, M::Matrix{T}, v::Vector{T}, quire = Quire(T)) where {T}
   l = length(v)
   @assert(length(result) == l)
   @assert(size(M) == (l,l))
@@ -141,7 +142,7 @@ function solve_row_echelon!{T}(result::Vector{T}, M::Matrix{T}, v::Vector{T}, qu
   end
 end
 
-function solve{T}(M::Matrix{T}, v::Vector{T})
+function solve(M::Matrix{T}, v::Vector{T}) where {T}
   quire = Quire(T)
   (Mre, vre) = row_echelon!(copy(M), copy(v), quire)
   r = Vector{T}(length(v))
@@ -149,18 +150,18 @@ function solve{T}(M::Matrix{T}, v::Vector{T})
   r
 end
 
-function solve_with_refine{T}(M::Matrix{T}, v::Vector{T})
+function solve_with_refine(M::Matrix{T}, v::Vector{T}) where {T}
     r = M \ v
     r1 = refine(r, M, v)
     r2 = refine(r, M, v)
 end
 
 
-doc"""
+@doc """
   find_residual(M, r, v)
   calculates v - M * r, using exact dot products.
 """
-function find_residuals{T}(M::Matrix{T}, r::Vector{T}, v::Vector{T}, quire = Quire(T))
+function find_residuals(M::Matrix{T}, r::Vector{T}, v::Vector{T}, quire = Quire(T)) where {T}
   res = zeros(T, length(v))
   for dim = 1:length(v)
     set!(quire, v[dim])
@@ -171,13 +172,13 @@ function find_residuals{T}(M::Matrix{T}, r::Vector{T}, v::Vector{T}, quire = Qui
   res
 end
 
-doc"""
+@doc """
   refine(r, M, v)
 
   calculates M * r and finds the residuals with respect to the solution v,
   and then solves those residuals and applies it back to r.
 """
-function refine{T}(r::Vector{T}, M::Matrix{T}, v::Vector{T}, quire = Quire(T))
+function refine(r::Vector{T}, M::Matrix{T}, v::Vector{T}, quire = Quire(T)) where {T}
   #first, find the residual.
   residual = find_residuals(M, r, v, quire)
   #then solve the residual, and augment r.
@@ -188,7 +189,7 @@ end
 ################################################################################
 #for testing purposes, random_exact_row(n) and random_exact_matrix(n) routines.
 
-function obliterate_lsb{N,ES}(pvalue::Posit{N,ES})
+function obliterate_lsb(pvalue::Posit{N,ES}) where {N,ES}
   (s, exp, frc) = posit_components(pvalue)
   if frc == zero(UInt64)
     #bump up an exponent.
@@ -199,11 +200,11 @@ function obliterate_lsb{N,ES}(pvalue::Posit{N,ES})
   end
 end
 
-doc"""
+@doc """
   SigmoidNumbers.random_exact_row(n)
   creates a row that is summable to an exact number.
 """
-function random_exact_row{N,ES}(::Type{Posit{N,ES}}, count, randomizer::Function = rand, q::Quire = Quire(Posit{N,ES}))
+function random_exact_row(::Type{Posit{N,ES}}, count, randomizer::Function = rand, q::Quire = Quire(Posit{N,ES})) where {N,ES}
   #first generate a <count> number of random values.
   current_row_vector = Posit{N,ES}.(randomizer(count))
 
@@ -236,7 +237,7 @@ function random_exact_row{N,ES}(::Type{Posit{N,ES}}, count, randomizer::Function
   end
 end
 
-function random_exact_matrix{N,ES}(::Type{Posit{N,ES}}, count, randomizer::Function = rand, q::Quire = Quire(Posit{N,ES}))
+function random_exact_matrix(::Type{Posit{N,ES}}, count, randomizer::Function = rand, q::Quire = Quire(Posit{N,ES})) where {N,ES}
   M = zeros(Posit{N,ES}, count, count)
   for row = 1:count
     M[row, :] = random_exact_row(Posit{N,ES}, count, randomizer)
@@ -244,8 +245,8 @@ function random_exact_matrix{N,ES}(::Type{Posit{N,ES}}, count, randomizer::Funct
   M
 end
 
-exact_rowsum{N,ES}(M::Matrix{Posit{N,ES}}) = [exact_sum(M[row, :]) for row = 1:size(M,1)]
+exact_rowsum(M::Matrix{Posit{N,ES}}) where {N,ES} = [exact_sum(M[row, :]) for row = 1:size(M,1)]
 
 export random_exact_matrix, exact_rowsum
 
-Base.big{N,ES}(x::Posit{N,ES}) = big(Float64(x))
+Base.big(x::Posit{N,ES}) where {N,ES} = big(Float64(x))

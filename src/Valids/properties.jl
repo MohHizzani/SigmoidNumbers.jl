@@ -1,27 +1,27 @@
-@generated function isulp{N,ES}(x::Vnum{N, ES})
+@generated function isulp(x::Vnum{N, ES}) where {N,ES}
   inc = increment(Vnum{N, ES})
   :( (@u(x) & $inc) != 0 )
 end
 
-@generated function Base.isempty{N,ES}(x::Valid{N,ES})
+@generated function Base.isempty(x::Valid{N,ES}) where {N,ES}
   inc = increment(Vnum{N,ES})
   quote
     ((x.lower == zero(Vnum{N,ES})) || (x.upper == zero(Vnum{N,ES}))) && (@u(x.lower) == @u(x.upper) + $inc)
   end
 end
 
-Base.isnan{N,ES}(x::Valid{N,ES}) = isempty(x)
+Base.isnan(x::Valid{N,ES}) where {N,ES} = isempty(x)
 
-@generated function isallreals{N,ES}(x::Valid{N,ES})
+@generated function isallreals(x::Valid{N,ES}) where {N,ES}
   inc = increment(Vnum{N,ES})
   quote
     (x.lower != zero(Vnum{N,ES})) && (x.upper != zero(Vnum{N,ES})) && (@u(x.lower) == @u(x.upper) + $inc)
   end
 end
 
-istile{N,ES}(x::Valid{N,ES}) = (x.lower == x.upper)
+istile(x::Valid{N,ES}) where {N,ES} = (x.lower == x.upper)
 
-doc"""
+@doc """
     roundsinf(x::Valid)
     checks if the value "rounds infinity".  Table:
 
@@ -55,20 +55,20 @@ doc"""
     [(0, Inf]     |           true
     [(0, -])      |           true
 """
-function roundsinf{N,ES}(x::Valid{N,ES})
+function roundsinf(x::Valid{N,ES}) where {N,ES}
     (!isempty(x)) && ((@s(x.upper) < @s(x.lower)) || isinf(x.lower))
 end
 
 #amazing symmetrical structure to "roundsinf"
-function containszero{N,ES}(x::Valid{N,ES})
+function containszero(x::Valid{N,ES}) where {N,ES}
     (!isempty(x)) && ((@u(x.upper) < @u(x.lower)) || x.lower == zero(Vnum{N,ES}))
 end
 
-function ispositive{N,ES}(x::Valid{N,ES})
+function ispositive(x::Valid{N,ES}) where {N,ES}
   zero(@Int) < (@s x.lower) <= (@s x.upper)
 end
 
-function isnegative{N,ES}(x::Valid{N,ES})
+function isnegative(x::Valid{N,ES}) where {N,ES}
   (@u Vnum{N,ES}(Inf))< (@u x.lower) <= (@u x.upper)
 end
 
@@ -76,19 +76,19 @@ end
 """
   nonnegative(::Valid) is true if no values in x are negative.
 """
-nonnegative{N,ES}(x::Valid{N,ES}) = (x.lower <= zero(Vnum{N,ES})) && ((!isfinite(x.upper) || x.lower <= x.upper <= maxpos(Vnum{N,ES})))
+nonnegative(x::Valid{N,ES}) where {N,ES} = (x.lower <= zero(Vnum{N,ES})) && ((!isfinite(x.upper) || x.lower <= x.upper <= maxpos(Vnum{N,ES})))
 
 """
   nonpositive(::Valid) is true if no values in x are positive.
 """
-nonpositive{N,ES}(x::Valid{N,ES}) = (x.upper <= zero(Vnum{N,ES})) && ((!isfinite(x.lower) || minneg(Vnum{N,ES}) <= x.lower <= x.upper))
+nonpositive(x::Valid{N,ES}) where {N,ES} = (x.upper <= zero(Vnum{N,ES})) && ((!isfinite(x.lower) || minneg(Vnum{N,ES}) <= x.lower <= x.upper))
 
 """
   rounds_positive(::Valid) is true if x contains both zero, infinity, and passes through the positive numbers.
 """
-rounds_positive{N,ES}(x::Valid{N,ES}) = isfinite(x.lower) && (x.lower <= zero(Vnum{N,ES})) && (x.upper < x.lower)
+rounds_positive(x::Valid{N,ES}) where {N,ES} = isfinite(x.lower) && (x.lower <= zero(Vnum{N,ES})) && (x.upper < x.lower)
 
 """
   rounds_negative(::Valid) is true if x contains both zero, infinity, and passes through the negative numbers.
 """
-rounds_negative{N,ES}(x::Valid{N,ES}) = isfinite(x.upper) && (x.upper >= zero(Vnum{N,ES})) && (x.lower > x.upper)
+rounds_negative(x::Valid{N,ES}) where {N,ES} = isfinite(x.upper) && (x.upper >= zero(Vnum{N,ES})) && (x.lower > x.upper)

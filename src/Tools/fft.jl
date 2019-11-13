@@ -5,7 +5,7 @@ const TWIDDLE_FACTORS = Dict{Tuple{Type, Integer},Vector}()
 import Base: fft, ifft
 
 #actual meat of the fast fourier transform
-@generated function __fft{T<:AbstractFloat, l, i, n}(v::AbstractVector{Complex{T}}, ::Type{Val{l}}, ::Type{Val{i}}, ::Type{Val{n}})
+@generated function __fft(v::AbstractVector{Complex{T}}, ::Type{Val{l}}, ::Type{Val{i}}, ::Type{Val{n}}) where {T<:AbstractFloat, l, i, n}
   # l - length. (Int.  Must be power of 2)
   # i - is it inverse ? (Bool)
   # n - continuous normalization ? (Bool)
@@ -49,9 +49,9 @@ import Base: fft, ifft
   end
 end
 
-function custom_fft{T<:AbstractFloat}(v::Union{Vector{Complex{T}}, Vector{T}};
+function custom_fft(v::Union{Vector{Complex{T}}, Vector{T}};
     normalize = :oninverse,
-    inverse = false)
+    inverse = false) where {T<:AbstractFloat}
   #first check that the length of the vector is a power of 2
   l = length(v)
   ispow2(l) || throw(ArgumentError("non-powers of 2 not currently supported"))
@@ -78,13 +78,13 @@ function custom_fft{T<:AbstractFloat}(v::Union{Vector{Complex{T}}, Vector{T}};
   return v
 end
 
-fft{T<:Posit}(v::Union{Vector{Complex{T}}, Vector{T}};
+fft(v::Union{Vector{Complex{T}}, Vector{T}};
     normalize = :oninverse,
-    inverse = false) = custom_fft(v, normalize = normalize, inverse = inverse)
+    inverse = false) where {T<:Posit} = custom_fft(v, normalize = normalize, inverse = inverse)
 
-custom_ifft{T<:Posit}(v::Union{Vector{Complex{T}}, Vector{T}}; normalize = :oninverse) = custom_fft(v, normalize = normalize, inverse = true)
+custom_ifft(v::Union{Vector{Complex{T}}, Vector{T}}; normalize = :oninverse) where {T<:Posit} = custom_fft(v, normalize = normalize, inverse = true)
 
-ifft{T<:Posit}(v::Union{Vector{Complex{T}}, Vector{T}}; normalize = :oninverse) = custom_fft(v, normalize = normalize, inverse = true)
+ifft(v::Union{Vector{Complex{T}}, Vector{T}}; normalize = :oninverse) where {T<:Posit} = custom_fft(v, normalize = normalize, inverse = true)
 
 
 export custom_fft, custom_ifft;

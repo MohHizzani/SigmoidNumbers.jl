@@ -1,7 +1,7 @@
 import Base: *
 
-*{N, ES, mode}(lhs::Bool, rhs::Sigmoid{N, ES, mode}) = reinterpret(Sigmoid{N, ES, mode}, @s(rhs) * lhs)
-*{N, ES, mode}(lhs::Sigmoid{N, ES, mode}, rhs::Bool) = reinterpret(Sigmoid{N, ES, mode}, @s(lhs) * rhs)
+*(lhs::Bool, rhs::Sigmoid{N, ES, mode}) where {N, ES, mode} = reinterpret(Sigmoid{N, ES, mode}, @s(rhs) * lhs)
+*(lhs::Sigmoid{N, ES, mode}, rhs::Bool) where {N, ES, mode} = reinterpret(Sigmoid{N, ES, mode}, @s(lhs) * rhs)
 
 #############################################################################3##
 ## return types for valid division.
@@ -48,7 +48,7 @@ const multiplication_left_zero = Dict((:guess,         :guess)         => :(zero
                                       (:outward_exact, :outward_ulp)   => :(zero(Sigmoid{N,ES,:outward_exact})),
                                       (:outward_ulp,   :outward_ulp)   => :(zero(Sigmoid{N,ES,:outward_ulp})))
 
-@generated function *{N, ES, lhs_mode, rhs_mode}(lhs::Sigmoid{N, ES, lhs_mode}, rhs::Sigmoid{N, ES, rhs_mode})
+@generated function *(lhs::Sigmoid{N, ES, lhs_mode}, rhs::Sigmoid{N, ES, rhs_mode}) where {N, ES, lhs_mode, rhs_mode}
 
     #dealing with modes for multiplication
     if !haskey(multiplication_types, (lhs_mode, rhs_mode))
@@ -121,7 +121,7 @@ const multiplication_left_zero = Dict((:guess,         :guess)         => :(zero
 end
 
 
-@generated function mul_algorithm{N, ES, lhs_mode, rhs_mode}(lhs::Sigmoid{N, ES, lhs_mode}, rhs::Sigmoid{N, ES, rhs_mode})
+@generated function mul_algorithm(lhs::Sigmoid{N, ES, lhs_mode}, rhs::Sigmoid{N, ES, rhs_mode}) where {N, ES, lhs_mode, rhs_mode}
 
     #dealing with modes for multiplication
     haskey(multiplication_types, (lhs_mode, rhs_mode)) || throw(ArgumentError("incompatible types passed to multiplication function!"))
@@ -271,7 +271,7 @@ const division_right_zero = Dict((:guess, :guess)                 => :(Sigmoid{N
                                  (:outward_ulp,   :inward_ulp)    => :(nothing))
 
 
-@generated function Base.:/{N,ES,lhs_mode,rhs_mode}(lhs::Sigmoid{N,ES,lhs_mode}, rhs::Sigmoid{N,ES,rhs_mode})
+@generated function Base.:/(lhs::Sigmoid{N,ES,lhs_mode}, rhs::Sigmoid{N,ES,rhs_mode}) where {N, ES, lhs_mode, rhs_mode}
      if !haskey(division_types, (lhs_mode, rhs_mode))
         #inward_exact and outward_exact could be annihilators which makes some processes
         #try to send "incorrect types" to the division algorithm.  This segment
@@ -423,6 +423,6 @@ const division_right_zero = Dict((:guess, :guess)                 => :(Sigmoid{N
   end
 end
 
-Base.inv{N,ES,mode}(x::Sigmoid{N,ES,mode}) = one(Sigmoid{N,ES,mode}) / x
-Base.inv{N,ES}(x::Sigmoid{N,ES,:lower}) = one(Sigmoid{N,ES,:exact}) / x
-Base.inv{N,ES}(x::Sigmoid{N,ES,:upper}) = one(Sigmoid{N,ES,:exact}) / x
+Base.inv(x::Sigmoid{N,ES,mode}) where {N, ES, mode} = one(Sigmoid{N,ES,mode}) / x
+Base.inv(x::Sigmoid{N,ES,:lower}) where {N, ES} = one(Sigmoid{N,ES,:exact}) / x
+Base.inv(x::Sigmoid{N,ES,:upper}) where {N, ES} = one(Sigmoid{N,ES,:exact}) / x

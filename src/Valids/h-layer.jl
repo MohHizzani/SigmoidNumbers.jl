@@ -1,5 +1,5 @@
 
-function describe{N, ES}(x::Valid{N, ES}, f = println)
+function describe(x::Valid{N, ES}, f = println) where {N,ES}
   isempty(x)    && return string("Valid{$N,$ES}(∅)")                               |> f
   isallreals(x) && return string("Valid{$N,$ES}(ℝp)")                              |> f
 
@@ -25,13 +25,13 @@ function describe{N, ES}(x::Valid{N, ES}, f = println)
     if (lvalue == rvalue)
       string("Valid{$N,$ES}(", lvalue, " ex)") |> f
     else
-      string("Valid{$N,$ES}(", lvalue, lower_u ? " op" : " ex", " → ", rvalue, upper_u ? " op)": " ex)") |> f
+      string("Valid{$N,$ES}(", lvalue, lower_u ? " op" : " ex", " → ", rvalue, upper_u ? " op)" : " ex)") |> f
     end
   else
   end
 end
 
-function describe{N,ES}(x::Vnum{N,ES}, f = println)
+function describe(x::Vnum{N,ES}, f = println) where {N,ES}
   lvalue = Float64(glb(x))
   rvalue = Float64(lub(x))
 
@@ -42,15 +42,15 @@ function describe{N,ES}(x::Vnum{N,ES}, f = println)
   end
 end
 
-function bits{N,ES}(x::Valid{N,ES})
+function bits(x::Valid{N,ES}) where {N,ES}
   string(bits(x.lower),bits(x.upper))
 end
 
-function bits{N,ES}(x::Valid{N,ES}, separator::AbstractString)
+function bits(x::Valid{N,ES}, separator::AbstractString) where {N,ES}
   string(bits(x.lower, separator),"|",bits(x.upper, separator))
 end
 
-function show{N,ES}(io::IO, x::Valid{N,ES})
+function show(io::IO, x::Valid{N,ES}) where {N,ES}
   print(io, x.lower, " → " , x.upper)
 end
 

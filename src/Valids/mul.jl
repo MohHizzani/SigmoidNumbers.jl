@@ -1,4 +1,4 @@
-function Base.:*{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function Base.:*(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
     (isempty(lhs)    || isempty(rhs))    && (return Valid{N,ES}(∅))
     (isallreals(lhs) || isallreals(rhs)) && (return Valid{N,ES}(ℝp))
 
@@ -22,50 +22,50 @@ const __LHS_NEG_RHS_POS = 1
 const __LHS_POS_RHS_NEG = 2
 const __LHS_NEG_RHS_NEG = 3
 
-function min_not_inf{N,ES,mode1,mode2}(x::Sigmoid{N,ES,mode1}, y::Sigmoid{N,ES,mode2})
+function min_not_inf(x::Sigmoid{N,ES,mode1}, y::Sigmoid{N,ES,mode2}) where {N,ES,mode1,mode2}
     isfinite(x) || return (mode1 == :inward_ulp) ? x : y
     isfinite(y) || return (mode2 == :inward_ulp) ? y : x
     min(x, y)
 end
 
-function max_not_inf{N,ES,mode1,mode2}(x::Sigmoid{N,ES,mode1}, y::Sigmoid{N,ES,mode2})
+function max_not_inf(x::Sigmoid{N,ES,mode1}, y::Sigmoid{N,ES,mode2}) where {N,ES,mode1,mode2}
     isfinite(x) || return (mode1 == :inward_ulp) ? x : y
     isfinite(y) || return (mode2 == :inward_ulp) ? y : x
     max(x, y)
 end
 
-function Base.min{N,ES}(x::Sigmoid{N,ES,:inward_exact}, y::Sigmoid{N,ES,:inward_ulp})
+function Base.min(x::Sigmoid{N,ES,:inward_exact}, y::Sigmoid{N,ES,:inward_ulp}) where {N,ES}
     rx = reinterpret(Vnum{N,ES}, x)
     ry = reinterpret(Vnum{N,ES}, y)
     (rx < zero(Vnum{N,ES})) && (rx == ry) && return x
     (rx < ry) ? x : y
 end
-function Base.max{N,ES}(x::Sigmoid{N,ES,:inward_exact}, y::Sigmoid{N,ES,:inward_ulp})
+function Base.max(x::Sigmoid{N,ES,:inward_exact}, y::Sigmoid{N,ES,:inward_ulp}) where {N,ES}
     rx = reinterpret(Vnum{N,ES}, x)
     ry = reinterpret(Vnum{N,ES}, y)
     (rx > zero(Vnum{N,ES})) && (rx == ry) && return x
     (rx > ry) ? x : y
 end
 
-function Base.min{N,ES}(x::Sigmoid{N,ES,:outward_exact}, y::Sigmoid{N,ES,:outward_ulp})
+function Base.min(x::Sigmoid{N,ES,:outward_exact}, y::Sigmoid{N,ES,:outward_ulp}) where {N,ES}
     rx = reinterpret(Vnum{N,ES}, x)
     ry = reinterpret(Vnum{N,ES}, y)
     (rx > zero(Vnum{N,ES})) && (rx == ry) && return x
     (rx < ry) ? x : y
 end
-function Base.max{N,ES}(x::Sigmoid{N,ES,:outward_exact}, y::Sigmoid{N,ES,:outward_ulp})
+function Base.max(x::Sigmoid{N,ES,:outward_exact}, y::Sigmoid{N,ES,:outward_ulp}) where {N,ES}
     rx = reinterpret(Vnum{N,ES}, x)
     ry = reinterpret(Vnum{N,ES}, y)
     (rx < zero(Vnum{N,ES})) && (rx == ry) && return x
     (rx > ry) ? x : y
 end
 
-Base.min{N,ES}(x::Sigmoid{N,ES,:inward_ulp},y::Sigmoid{N,ES,:inward_exact})   = min(y, x)
-Base.max{N,ES}(x::Sigmoid{N,ES,:inward_ulp},y::Sigmoid{N,ES,:inward_exact})   = max(y, x)
-Base.min{N,ES}(x::Sigmoid{N,ES,:outward_ulp},y::Sigmoid{N,ES,:outward_exact}) = min(y, x)
-Base.max{N,ES}(x::Sigmoid{N,ES,:outward_ulp},y::Sigmoid{N,ES,:outward_exact}) = max(y, x)
+Base.min(x::Sigmoid{N,ES,:inward_ulp},y::Sigmoid{N,ES,:inward_exact}) where {N,ES}   = min(y, x)
+Base.max(x::Sigmoid{N,ES,:inward_ulp},y::Sigmoid{N,ES,:inward_exact}) where {N,ES}   = max(y, x)
+Base.min(x::Sigmoid{N,ES,:outward_ulp},y::Sigmoid{N,ES,:outward_exact}) where {N,ES} = min(y, x)
+Base.max(x::Sigmoid{N,ES,:outward_ulp},y::Sigmoid{N,ES,:outward_exact}) where {N,ES} = max(y, x)
 
-function infmul{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function infmul(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
     if containszero(rhs)
         return Valid{N,ES}(ℝp)
     elseif containszero(lhs)  #lhs contains zero AND infinity
@@ -118,9 +118,9 @@ function infmul{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
     end
 end
 
-__simple_roundszero{T <: Valid}(v::T) = ((@s v.lower) < 0) & ((@s v.upper) > 0)
+__simple_roundszero(v::T) where {T <: Valid} = ((@s v.lower) < 0) & ((@s v.upper) > 0)
 
-function zeromul{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function zeromul(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
     #lhs and rhs guaranteed to not cross infinity.  lhs guaranteed to contain zero.
     if __simple_roundszero(rhs)
         # when rhs spans zero, we have to check four possible endpoints.
@@ -141,7 +141,7 @@ function zeromul{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
     end
 end
 
-function stdmul{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function stdmul(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
   #both values are "reasonable."
   _state = nonpositive(lhs) * 1 + nonpositive(rhs) * 2
 

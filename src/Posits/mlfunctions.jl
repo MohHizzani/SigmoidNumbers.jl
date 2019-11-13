@@ -9,7 +9,7 @@ macro unitrange_check(y, functionname)
   end
 end
 
-doc"""
+@doc """
   oneminus(::Posit)
 
   calculates the value of 1-y.
@@ -17,25 +17,25 @@ doc"""
   This function is undefined for values > 1 or less than 0.
 """
 oneminus(y::Posit) = oneminus_careful(y)
-oneminus_sloppy{P <: Posit}(y::P) = reinterpret(P, (@invertbit) - @u(y))
+oneminus_sloppy(y::P) where {P <: Posit} = reinterpret(P, (@invertbit) - @u(y))
 function oneminus_careful(y)
   @unitrange_check(y, :oneminus)
   oneminus_sloppy(y)
 end
 
-doc"""
+@doc """
   pseudologistic(::Posit)
 
   calculates the pseudo-logistic sigmoid curve for the Posit data type.
 """
 pseudologistic(x::Posit) = pseudologistic_careful(x)
-pseudologistic_sloppy{P <: Posit}(x::P) = reinterpret(P, (@u(x) $ @signbit) >> 2)
+pseudologistic_sloppy(x::P) where {P <: Posit} = reinterpret(P, (@u(x) $ @signbit) >> 2)
 function pseudologistic_careful(x::Posit)
   isfinite(x) || throw(ArgumentError("pseudologistic function is undefined for infinity"))
   __round(pseudologistic_sloppy(x))
 end
 
-doc"""
+@doc """
   delta_psl(::Posit)
 
   calculates the value dy/dx using the differential equation dy/dx = y(1 - y)
@@ -49,7 +49,7 @@ function delta_psl_careful(y::Posit)
   __round(delta_psl_sloppy(y))
 end
 
-doc"""
+@doc """
   pseudologcost(::Posit)
 
   calculates the pseudologcost function for the Posit data type.  The
@@ -58,13 +58,13 @@ doc"""
   This function is undefined for values > 1 or less than zero.
 """
 pseudologcost(y::Posit) = pseudologcost_careful(y)
-pseudologcost_sloppy{P <: Posit}(y::P) = reinterpret(P, @u(y) << 1)
+pseudologcost_sloppy(y::P) where {P <: Posit} = reinterpret(P, @u(y) << 1)
 function pseudologcost_careful(y::Posit)
   @unitrange_check(y, :pseudologcost)
   __round(pseudologcost_sloppy(y))
 end
 
-doc"""
+@doc """
   pseudosoftplus(::Posit)
 
   calculates the pseudosoftplus function for the Posit data type.  The
@@ -72,8 +72,8 @@ doc"""
 
 """
 pseudosoftplus(x::Posit) = pseudosoftplus_careful(x)
-pseudosoftplus_sloppy{P <: Posit}(x::P) = reinterpret(P, (@u(x) $ @signbit) >> 1)
-@generated function pseudosoftplus_careful{N}(x::Posit{N})
+pseudosoftplus_sloppy(x::P) where {P <: Posit} = reinterpret(P, (@u(x) $ @signbit) >> 1)
+@generated function pseudosoftplus_careful(x::Posit{N}) where {N}
   mask = @mask(N)
   quote
     __round(reinterpret(Posit{N}, @u(pseudosoftplus_sloppy(x)) & $mask))
@@ -83,4 +83,4 @@ end
 
 ##### ETC
 
-Base.randn{P <: Posit}(::Type{P},args::Integer...) = P.(randn(args...))
+Base.randn(::Type{P},args::Integer...) where {P <: Posit} = P.(randn(args...))

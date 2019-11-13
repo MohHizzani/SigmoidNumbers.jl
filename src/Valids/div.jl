@@ -1,4 +1,4 @@
-function Base.:/{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function Base.:/(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
 
   (isempty(lhs)    || isempty(rhs))    && (return Valid{N,ES}(∅))
   (isallreals(lhs) || isallreals(rhs)) && (return Valid{N,ES}(ℝp))
@@ -16,7 +16,7 @@ function Base.:/{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
   end
 end
 
-function lhs_infdiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function lhs_infdiv(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
     if roundsinf(rhs)
         return Valid{N,ES}(ℝp)
     elseif containszero(lhs)  #lhs contains zero AND infinity.  Rhs cannot contain infinity.
@@ -71,7 +71,7 @@ function lhs_infdiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
     end
 end
 
-function rhs_infdiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function rhs_infdiv(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
 
     if containszero(rhs)  #rhs contains zero AND infinity.
         #pass (for now)
@@ -124,7 +124,7 @@ function rhs_infdiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
     end
 end
 
-function lhs_zerodiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function lhs_zerodiv(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
     #lhs and rhs guaranteed to not cross infinity.  lhs guaranteed to contain zero.
     containszero(rhs) && return Valid{N,ES}(ℝp)
 
@@ -139,7 +139,7 @@ function lhs_zerodiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
     end
 end
 
-function rhs_zerodiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function rhs_zerodiv(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
     #lhs and rhs guaranteed to not contain infinity, lhs guaranteed to not contain zero.
 
     #example: (10, 20) / (-2, 5) -> (-10, 4)
@@ -151,7 +151,7 @@ function rhs_zerodiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
     end
 end
 
-function stddiv{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function stddiv(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
   #both values are "reasonable."
   _state = nonpositive(lhs) * 1 + nonpositive(rhs) * 2
 
@@ -169,7 +169,7 @@ end
 #do multiplicative inverses.  We cannot just chain division as a multiplication
 #with this, due to the dependency problem.
 
-function Base.inv{N,ES}(x::Valid{N,ES})
+function Base.inv(x::Valid{N,ES}) where {N,ES}
     isallreals(x) && return x
     isempty(x) && return x
 
@@ -180,4 +180,4 @@ function Base.inv{N,ES}(x::Valid{N,ES})
     end
 end
 
-Base.:/{N,ES}(x::Valid{N,ES}) = inv(x)
+Base.:/(x::Valid{N,ES}) where {N,ES} = inv(x)

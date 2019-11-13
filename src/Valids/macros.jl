@@ -3,8 +3,8 @@
 #sigmoid by calling the call constructors which are designed to handle bumping
 #up or down the ubit.
 
-typeas{N,ES}(value::Valid{N,ES}, stype::Symbol) = Sigmoid{N,ES,stype}
-Base.:~{N,ES}(value::Valid{N,ES}, stype::Symbol) = typeas(value, stype)
+typeas(value::Valid{N,ES}, stype::Symbol) where {N,ES} = Sigmoid{N,ES,stype}
+Base.:~(value::Valid{N,ES}, stype::Symbol) where {N,ES} = typeas(value, stype)
 
 macro upper(value)
   esc(:(isulp(($value).upper) ? reinterpret(($value ~ :upper), ($value).upper |> lub) : reinterpret(($value ~ :exact), ($value).upper)))
@@ -58,18 +58,18 @@ macro d_upper(value)
 end
 
 
-recast_as_lower{N,ES}(x::Sigmoid{N,ES,:exact}) = x
-recast_as_lower{N,ES}(x::Sigmoid{N,ES,:lower}) = x
-recast_as_lower{N,ES}(x::Sigmoid{N,ES,:cross}) = reinterpret(Sigmoid{N,ES,:lower}, x)
-recast_as_lower{N,ES}(x::Sigmoid{N,ES,:upper}) = reinterpret(Sigmoid{N,ES,:lower}, x)
+recast_as_lower(x::Sigmoid{N,ES,:exact}) where {N,ES} = x
+recast_as_lower(x::Sigmoid{N,ES,:lower}) where {N,ES} = x
+recast_as_lower(x::Sigmoid{N,ES,:cross}) where {N,ES} = reinterpret(Sigmoid{N,ES,:lower}, x)
+recast_as_lower(x::Sigmoid{N,ES,:upper}) where {N,ES} = reinterpret(Sigmoid{N,ES,:lower}, x)
 macro rl(value)
   esc(:(recast_as_lower($value)))
 end
 
-recast_as_upper{N,ES}(x::Sigmoid{N,ES,:exact}) = x
-recast_as_upper{N,ES}(x::Sigmoid{N,ES,:upper}) = x
-recast_as_upper{N,ES}(x::Sigmoid{N,ES,:cross}) = reinterpret(Sigmoid{N,ES,:upper}, x)
-recast_as_upper{N,ES}(x::Sigmoid{N,ES,:lower}) = reinterpret(Sigmoid{N,ES,:upper}, x)
+recast_as_upper(x::Sigmoid{N,ES,:exact}) where {N,ES} = x
+recast_as_upper(x::Sigmoid{N,ES,:upper}) where {N,ES} = x
+recast_as_upper(x::Sigmoid{N,ES,:cross}) where {N,ES} = reinterpret(Sigmoid{N,ES,:upper}, x)
+recast_as_upper(x::Sigmoid{N,ES,:lower}) where {N,ES} = reinterpret(Sigmoid{N,ES,:upper}, x)
 macro ru(value)
   esc(:(recast_as_upper($value)))
 end

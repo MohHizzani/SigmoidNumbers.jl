@@ -9,7 +9,7 @@ const addition_types = Dict((:guess, :guess) => :guess,
                             (:lower, :lower) => :lower,
                             (:upper, :upper) => :upper)
 
-@generated function +{N, ES, lhs_mode, rhs_mode}(lhs::Sigmoid{N, ES, lhs_mode}, rhs::Sigmoid{N, ES, rhs_mode})
+@generated function +(lhs::Sigmoid{N, ES, lhs_mode}, rhs::Sigmoid{N, ES, rhs_mode}) where {N, ES, lhs_mode, rhs_mode}
   if (ES == 0)
     breakdown = :(@breakdown lhs arithmetic; @breakdown rhs arithmetic)
     sub_algorithm = arithmetic_sub
@@ -70,8 +70,8 @@ const addition_types = Dict((:guess, :guess) => :guess,
   end
 end
 
--{N, ES, mode}(operand::Sigmoid{N, ES, mode}) = reinterpret(Sigmoid{N, ES, mode}, -@s(operand))
--{N, ES, mode}(lhs::Sigmoid{N, ES, mode}, rhs::Sigmoid{N, ES, mode}) = lhs + (-rhs)
+-(operand::Sigmoid{N, ES, mode}) where {N, ES, mode} = reinterpret(Sigmoid{N, ES, mode}, -@s(operand))
+-(lhs::Sigmoid{N, ES, mode}, rhs::Sigmoid{N, ES, mode}) where {N, ES, mode} = lhs + (-rhs)
 
 function arithmetic_sub(lhs_sgn, lhs_exp, lhs_frc, rhs_sgn, rhs_exp, rhs_frc)
   ## assign top and bottom fractions, ascertain the final sign, and set the

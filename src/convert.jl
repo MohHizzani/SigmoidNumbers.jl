@@ -5,13 +5,13 @@ import Base.convert
 
 const IEEEFloat = Union{Float16, Float32, Float64}
 
-function convert{N, ES, mode, I <: Signed}(T::Type{Sigmoid{N, ES, mode}}, int::I)
+function convert(T::Type{Sigmoid{N, ES, mode}}, int::I) where {N, ES, mode, I <: Signed}
   #warn("conversion from integers not yet properly supported! $int")
   #throw(ErrorException("halp"))
   convert(T, convert(Float64, int))
 end
 
-@generated function convert{F <: IEEEFloat, N, ES, mode}(::Type{F}, x::Sigmoid{N, ES, mode})
+@generated function convert(::Type{F}, x::Sigmoid{N, ES, mode}) where {F <: IEEEFloat, N, ES, mode}
   FInt  = Dict(Float16 => UInt16, Float32 => UInt32, Float64 => UInt64)[F]
   fbits = Dict(Float16 => 16    , Float32 => 32,     Float64 => 64)[F]
   ebits = Dict(Float16 => 5     , Float32 => 8,      Float64 => 11)[F]
@@ -41,7 +41,7 @@ end
   end
 end
 
-doc"""
+@doc """
   fptrip(x)
 
   takes an IEEE floating point and returns the triplet (sign::Bool, exponent::Int, fraction::@UInt).
@@ -49,7 +49,7 @@ doc"""
 
   NB: Doesn't work for Inf and zero values.
 """
-@generated function fptrip{F <: IEEEFloat}(x::F)
+@generated function fptrip(x::F) where {F <: IEEEFloat}
   FInt  = Dict(Float16 => UInt16, Float32 => UInt32, Float64 => UInt64)[F]
   fbits = Dict(Float16 => 16    , Float32 => 32,     Float64 => 64)[F]
   ebits = Dict(Float16 => 5     , Float32 => 8,      Float64 => 11)[F]
@@ -73,7 +73,7 @@ doc"""
   end
 end
 
-function convert{N, ES, mode, F <: IEEEFloat}(::Type{Sigmoid{N, ES, mode}}, f::F)
+function convert(::Type{Sigmoid{N, ES, mode}}, f::F) where {N, ES, mode, F <: IEEEFloat}
   #handle the three corner cases of NaN, infinity and zero.
   isnan(f) && throw(NaNError(convert, [Sigmoid{N, ES, mode}, f]))
   isfinite(f) || return reinterpret(Sigmoid{N, ES, mode}, @signbit)
@@ -82,7 +82,7 @@ function convert{N, ES, mode, F <: IEEEFloat}(::Type{Sigmoid{N, ES, mode}}, f::F
   __round(build_numeric(Sigmoid{N, ES, mode}, fptrip(f)...))
 end
 
-@generated function (::Type{Sigmoid{N, ES, mode}}){N, ES, mode, UI <: Unsigned}(i::UI)
+@generated function Sigmoid(i::UI) where {N, ES, mode, UI <: Unsigned}
   #conversion from unsigned integer will be interpreted as a desire to convert
   #logical representation; conversion from signed integer will be interpreted
   #as a desire to convert the semantic value.
@@ -100,7 +100,7 @@ end
   end
 end
 
-function build_numeric{N, ES, mode}(::Type{Sigmoid{N, ES, mode}}, sign, exponent, fraction)
+function build_numeric(::Type{Sigmoid{N, ES, mode}}, sign, exponent, fraction) where {N, ES, mode}
   if exponent < 0
     (regime, subexponent) = divrem(exponent, 1 << ES)
     if (subexponent != 0)
@@ -131,7 +131,7 @@ function build_numeric{N, ES, mode}(::Type{Sigmoid{N, ES, mode}}, sign, exponent
 end
 
 #build_numeric is much simpler when ES = 0
-function build_numeric{N, mode}(::Type{Sigmoid{N, 0, mode}}, sign, exponent, fraction)
+function build_numeric(::Type{Sigmoid{N, 0, mode}}, sign, exponent, fraction) where {N, mode}
   if exponent < 0
     fshift = -exponent + 2
     body = one(@UInt) << (__BITS + exponent - 2)
@@ -149,7 +149,7 @@ function build_numeric{N, mode}(::Type{Sigmoid{N, 0, mode}}, sign, exponent, fra
 end
 
 #build_arithmetic is restricted to ES == 0 sigmoids.
-function build_arithmetic{N, mode}(::Type{Sigmoid{N, 0, mode}}, sign, exponent, fraction)
+function build_arithmetic(::Type{Sigmoid{N, 0, mode}}, sign, exponent, fraction) where {N, mode}
   normal = (fraction & @signbit) != 0
   #check if it's denormal.  If it is, then we don't shift.
   fshift = normal * (exponent + 1) + 1
@@ -163,4 +163,4 @@ function build_arithmetic{N, mode}(::Type{Sigmoid{N, 0, mode}}, sign, exponent, 
   reinterpret(Sigmoid{N, 0, mode}, sign ? -absval : absval)
 end
 
-Base.promote_rule{T<:Sigmoid}(::Type{T}, ::Type{Int64}) = T
+Base.promote_rule(::Type{T}, ::Type{Int64}) where {T<:Sigmoid} = T

@@ -50,7 +50,7 @@ end
 
     describe the width of the valid number.  This is the number of tiles.
 """
-vwidth{N,ES}(x::Valid{N,ES}) = ((@u x.upper) - (@u x.lower)) >> (64 - N) + 1
+vwidth(x::Valid{N,ES}) where {N,ES} = ((@u x.upper) - (@u x.lower)) >> (64 - N) + 1
 
 function merge_contiguous!(v1::Array{Valid{N,ES},J}, v2::Array{Valid{N,ES},J}) where J where {N,ES}
     dim = 0

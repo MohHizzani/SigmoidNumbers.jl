@@ -5,7 +5,7 @@ doc"""
 
   calculates the sum of the first n strided values in X.
 """
-function asum_naive{N,ES}(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, incx::Integer)
+function asum_naive(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, incx::Integer) where {N,ES}
     #see LAPACK sasum.f for code reference:
     # http://www.netlib.org/lapack/explore-html/df/d28/group__single__blas__level1_gafc5e1e8d9f26907c0a7cf878107f08cf.html#gafc5e1e8d9f26907c0a7cf878107f08cf
 
@@ -27,7 +27,7 @@ function asum_naive{N,ES}(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, inc
     accumulator
 end
 
-function BLAS.asum{N,ES}(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, incx::Integer)
+function BLAS.asum(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, incx::Integer) where {N,ES}
 
     #corner case checking.
     (n <= 0 || incx <= 0) && return zero(Posit{N,ES})
@@ -47,7 +47,7 @@ function BLAS.asum{N,ES}(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, incx
     accumulator
 end
 
-function axpy!{T<:Posit}(α, x::AbstractArray{T}, y::AbstractArray{T})
+function axpy!(α, x::AbstractArray{T}, y::AbstractArray{T}) where {T<:Posit}
     n = _length(x)
     if n != _length(y)
         throw(DimensionMismatch("x has length $n, but y has length $(_length(y))"))
@@ -58,7 +58,7 @@ function axpy!{T<:Posit}(α, x::AbstractArray{T}, y::AbstractArray{T})
     y
 end
 
-function dot_naive{T<:Posit}(n::Integer, x::AbstractArray{T}, incx::Integer, y::AbstractArray{T}, incy::Integer)
+function dot_naive(n::Integer, x::AbstractArray{T}, incx::Integer, y::AbstractArray{T}, incy::Integer) where {T<:Posit}
     (n <= 0 || incx <= 0) && return zero(T)
     (n * incx) > length(x) && throw(BoundsError(y, n * incx))
     (n * incy) > length(y) && throw(BoundsError(y, n * incy))
@@ -70,7 +70,7 @@ function dot_naive{T<:Posit}(n::Integer, x::AbstractArray{T}, incx::Integer, y::
     accumulator
 end
 
-function Base.dot{T<:Posit}(n::Integer, x::AbstractArray{T}, incx::Integer, y::AbstractArray{T}, incy::Integer)
+function Base.dot(n::Integer, x::AbstractArray{T}, incx::Integer, y::AbstractArray{T}, incy::Integer) where {T<:Posit}
     (n <= 0 || incx <= 0) && return zero(T)
     (n * incx) > length(x) && throw(BoundsError(y, n * incx))
     (n * incy) > length(y) && throw(BoundsError(y, n * incy))
@@ -83,7 +83,7 @@ function Base.dot{T<:Posit}(n::Integer, x::AbstractArray{T}, incx::Integer, y::A
     accumulator
 end
 
-function dot_naive{T<:Posit}(n::Integer, x::AbstractArray{Complex{T}}, incx::Integer, y::AbstractArray{Complex{T}}, incy::Integer)
+function dot_naive(n::Integer, x::AbstractArray{Complex{T}}, incx::Integer, y::AbstractArray{Complex{T}}, incy::Integer) where {T<:Posit}
     (n <= 0 || incx <= 0) && return zero(T)
     (n * incx) > length(x) && throw(BoundsError(y, n * incx))
     (n * incy) > length(y) && throw(BoundsError(y, n * incy))
@@ -100,7 +100,7 @@ function dot_naive{T<:Posit}(n::Integer, x::AbstractArray{Complex{T}}, incx::Int
     accumulator
 end
 
-function Base.dot{T<:Posit}(n::Integer, x::AbstractArray{Complex{T}}, incx::Integer, y::AbstractArray{Complex{T}}, incy::Integer)
+function Base.dot(n::Integer, x::AbstractArray{Complex{T}}, incx::Integer, y::AbstractArray{Complex{T}}, incy::Integer) where {T<:Posit}
     (n <= 0 || incx <= 0) && return zero(T)
     (n * incx) > length(x) && throw(BoundsError(y, n * incx))
     (n * incy) > length(y) && throw(BoundsError(y, n * incy))
@@ -118,7 +118,7 @@ function Base.dot{T<:Posit}(n::Integer, x::AbstractArray{Complex{T}}, incx::Inte
     real_accumulator + imag_accumulator * im
 end
 
-function dot_naive{T<:Posit}(x::AbstractArray{T}, y::AbstractArray{T})
+function dot_naive(x::AbstractArray{T}, y::AbstractArray{T}) where {T<:Posit}
     if length(x) != length(y)
         throw(length(x) > length(y) ? BoundsError(x, length(y) + 1) : BoundsError(y, length(x) + 1))
     end
@@ -129,14 +129,14 @@ function dot_naive{T<:Posit}(x::AbstractArray{T}, y::AbstractArray{T})
     accumulator
 end
 
-function Base.dot{N,ES}(x::AbstractArray{<:PositOrComplex{N,ES}}, y::AbstractArray{<:PositOrComplex{N,ES}})
+function Base.dot(x::AbstractArray{<:PositOrComplex{N,ES}}, y::AbstractArray{<:PositOrComplex{N,ES}}) where {N,ES}
     if length(x) != length(y)
         throw(length(x) > length(y) ? BoundsError(x, length(y) + 1) : BoundsError(y, length(x) + 1))
     end
     naked_dot(x, y)
 end
 
-function dot_naive{T<:Posit}(x::AbstractArray{Complex{T}}, y::AbstractArray{Complex{T}})
+function dot_naive(x::AbstractArray{Complex{T}}, y::AbstractArray{Complex{T}}) where {T<:Posit}
     if length(x) != length(y)
         throw(length(x) > length(y) ? BoundsError(x, length(y) + 1) : BoundsError(y, length(x) + 1))
     end

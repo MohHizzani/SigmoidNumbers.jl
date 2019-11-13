@@ -1,30 +1,30 @@
 
-Base.one{N,ES}(T::Type{Valid{N,ES}}) = Valid(one(Vnum{N,ES}), one(Vnum{N,ES}))
-Base.zero{N,ES}(T::Type{Valid{N,ES}}) = Valid(zero(Vnum{N,ES}), zero(Vnum{N,ES}))
+Base.one(T::Type{Valid{N,ES}}) where {N,ES} = Valid(one(Vnum{N,ES}), one(Vnum{N,ES}))
+Base.zero(T::Type{Valid{N,ES}}) where {N,ES} = Valid(zero(Vnum{N,ES}), zero(Vnum{N,ES}))
 
-type ∅; end
-type ℝ; end
-type ℝp; end
+abstract type ∅; end
+abstract type ℝ; end
+abstract type ℝp; end
 
-Base.convert{N, ES}(T::Type{Valid{N, ES}}, ::Type{∅})  = Valid(zero(     Vnum{N,ES}), maxneg( Vnum{N,ES}))
-Base.convert{N, ES}(T::Type{Valid{N, ES}}, ::Type{ℝ})  = Valid(-maxpos( Vnum{N,ES}), maxpos(      Vnum{N,ES}))
-Base.convert{N, ES}(T::Type{Valid{N, ES}}, ::Type{ℝp}) = Valid(Vnum{N,ES}(Inf),       maxpos(      Vnum{N,ES}))
+Base.convert(T::Type{Valid{N, ES}}, ::Type{∅}) where {N,ES}  = Valid(zero(     Vnum{N,ES}), maxneg( Vnum{N,ES}))
+Base.convert(T::Type{Valid{N, ES}}, ::Type{ℝ}) where {N,ES}  = Valid(-maxpos( Vnum{N,ES}), maxpos(      Vnum{N,ES}))
+Base.convert(T::Type{Valid{N, ES}}, ::Type{ℝp}) where {N,ES} = Valid(Vnum{N,ES}(Inf),       maxpos(      Vnum{N,ES}))
 
-type __plusstar; end
+abstract type __plusstar; end
 Base.:+(::typeof(Base.:*)) = __plusstar
-type __minusstar; end
+abstract type __minusstar; end
 Base.:-(::typeof(Base.:*)) = __minusstar
-type __positives; end
-type __negatives; end
+abstract type __positives; end
+abstract type __negatives; end
 
-(::Type{ℝ})(::Type{__plusstar}) =      __plusstar
-(::Type{ℝ})(::Type{__minusstar}) =     __minusstar
-(::Type{ℝ})(::typeof(+)) =             __positives
-(::Type{ℝ})(::typeof(-)) =             __negatives
+ℝ(::Type{__plusstar}) =      __plusstar
+ℝ(::Type{__minusstar}) =     __minusstar
+ℝ(::typeof(+)) =             __positives
+ℝ(::typeof(-)) =             __negatives
 
-Base.convert{N,ES}(T::Type{Valid{N,ES}}, ::Type{__plusstar}) =  Valid(minpos(Vnum{N, ES}),  maxpos(Vnum{N, ES}))
-Base.convert{N,ES}(T::Type{Valid{N,ES}}, ::Type{__minusstar}) = Valid(-maxpos(Vnum{N, ES}), maxneg(Vnum{N, ES}))
-Base.convert{N,ES}(T::Type{Valid{N,ES}}, ::Type{__positives}) = Valid(zero(Vnum{N, ES}),          maxpos(Vnum{N, ES}))
-Base.convert{N,ES}(T::Type{Valid{N,ES}}, ::Type{__negatives}) = Valid(-maxpos(Vnum{N, ES}),         zero(Vnum{N, ES}))
+Base.convert(T::Type{Valid{N,ES}}, ::Type{__plusstar}) where {N,ES} =  Valid(minpos(Vnum{N, ES}),  maxpos(Vnum{N, ES}))
+Base.convert(T::Type{Valid{N,ES}}, ::Type{__minusstar}) where {N,ES} = Valid(-maxpos(Vnum{N, ES}), maxneg(Vnum{N, ES}))
+Base.convert(T::Type{Valid{N,ES}}, ::Type{__positives}) where {N,ES} = Valid(zero(Vnum{N, ES}),          maxpos(Vnum{N, ES}))
+Base.convert(T::Type{Valid{N,ES}}, ::Type{__negatives}) where {N,ES} = Valid(-maxpos(Vnum{N, ES}),         zero(Vnum{N, ES}))
 
 export ∅, ℝ, ℝp

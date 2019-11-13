@@ -1,5 +1,5 @@
 
-function Base.:+{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
+function Base.:+(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES}
 
   (isempty(lhs)    || isempty(rhs))    && (return Valid{N,ES}(∅))
   (isallreals(lhs) || isallreals(rhs)) && (return Valid{N,ES}(ℝp))
@@ -22,5 +22,5 @@ function Base.:+{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES})
   return result
 end
 
-Base.:-{N,ES}(lhs::Valid{N,ES}, rhs::Valid{N,ES}) = lhs + (-rhs)
-Base.:-{N,ES}(x::Valid{N,ES}) = Valid{N,ES}(-x.upper, -x.lower)
+Base.:-(lhs::Valid{N,ES}, rhs::Valid{N,ES}) where {N,ES} = lhs + (-rhs)
+Base.:-(x::Valid{N,ES}) where {N,ES} = Valid{N,ES}(-x.upper, -x.lower)

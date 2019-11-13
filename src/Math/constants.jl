@@ -1,40 +1,40 @@
 import Base: one, zero, realmax, eps, issubnormal, isnan, isfinite
 
-one{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}}) = reinterpret(T, @invertbit)
-zero{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}}) = reinterpret(T, zero(@UInt))
+one(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = reinterpret(T, @invertbit)
+zero(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = reinterpret(T, zero(@UInt))
 
-@generated function maxpos{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}})
+@generated function maxpos(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode}
   v = (@signbit) - increment(Sigmoid{N, ES, mode})
   :(reinterpret(T, $v))
 end
-realmax{N,ES,mode}(T::Type{Sigmoid{N, ES, mode}}) = maxpos(T)
+realmax(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = maxpos(T)
 
-@generated function minpos{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}})
+@generated function minpos(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode}
   v = zero(@UInt) + increment(Sigmoid{N, ES, mode})
   :(reinterpret(T, $v))
 end
-realmin{N,ES,mode}(T::Type{Sigmoid{N, ES, mode}}) = minpos(T)
+realmin(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = minpos(T)
 
-@generated function maxneg{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}})
+@generated function maxneg(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode}
   v = zero(@UInt) - increment(Sigmoid{N, ES, mode})
   :(reinterpret(T, $v))
 end
 
-@generated function minneg{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}})
+@generated function minneg(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode}
   v = (@signbit) + increment(Sigmoid{N, ES, mode})
   :(reinterpret(T, $v))
 end
 
-@generated function eps{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}})
+@generated function eps(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode}
   if mode == :ubit
   else
   end
 end
 
 #no subnormals, no NaNs
-issubnormal{N,ES,mode}(x::Sigmoid{N, ES, mode}) = false
-isnan{N,ES,mode}(x::Sigmoid{N, ES, mode}) = false
-isfinite{N,ES,mode}(x::Sigmoid{N, ES, mode}) = (@u(x) != @signbit)
+issubnormal(x::Sigmoid{N, ES, mode}) where {N, ES, mode} = false
+isnan(x::Sigmoid{N, ES, mode}) where {N, ES, mode} = false
+isfinite(x::Sigmoid{N, ES, mode}) where {N, ES, mode} = (@u(x) != @signbit)
 #isfinite{N,ES}(x::Sigmoid{N, ES, :upper}) = false
 #isfinite{N,ES}(x::Sigmoid{N, ES, :lower}) = false
 #isfinite{N,ES}(x::Sigmoid{N, ES, :cross}) = false
@@ -47,7 +47,7 @@ struct ∞; end
 struct ∞n; end
 
 Base.:-(::Type{∞}) = ∞n
-Base.convert{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞}) = T(Inf)
-Base.convert{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞n}) = T(Inf)
+Base.convert(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞}) where {N, ES, mode} = T(Inf)
+Base.convert(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞n}) where {N, ES, mode} = T(Inf)
 
 export ∞

@@ -7,17 +7,17 @@ end
 
 
 #another testing function that makes life much easier:
-luupper{T}(lu::LUMatrix{T}) = lu.m |> UpperTriangular
-lulower{T}(lu::LUMatrix{T}) = (lu.m - luupper(lu) + eye(T, size(lu.m,1))) |> LowerTriangular
+luupper(lu::LUMatrix{T}) where {T} = lu.m |> UpperTriangular
+lulower(lu::LUMatrix{T}) where {T} = (lu.m - luupper(lu) + eye(T, size(lu.m,1))) |> LowerTriangular
 
 #just a testing function that tests the LU matrix.
-function lureassemble{T}(lu::LUMatrix{T})
+function lureassemble(lu::LUMatrix{T}) where {T}
     lulower(lu) * luupper(lu)
 end
 
 
 # TODO: implement unit testing on this function.
-@generated function solve_quire{T, onediag}(A::LowerTriangular{T}, B::AbstractVector{T}, quire = Quire(T), ::Type{Val{onediag}} = Val{false})
+@generated function solve_quire(A::LowerTriangular{T}, B::AbstractVector{T}, quire = Quire(T), ::Type{Val{onediag}} = Val{false}) where {T, onediag}
     first_factor, row_factor = if onediag
         :(B[1]), :(tmp)
     else
@@ -45,7 +45,7 @@ end
     end
 end
 
-function solve_quire{T}(A::UpperTriangular{T}, B::AbstractVector{T}, quire = Quire(T))
+function solve_quire(A::UpperTriangular{T}, B::AbstractVector{T}, quire = Quire(T)) where {T}
     m,n = size(A); l = length(B)
     (l == m) || throw(DimensionMismatch("matrix is ($m x $n) and vector is $l"))
     res = Vector{T}(n)
@@ -65,7 +65,7 @@ function solve_quire{T}(A::UpperTriangular{T}, B::AbstractVector{T}, quire = Qui
     res
 end
 
-function solve_quire{T}(LM::LUMatrix{T}, v::AbstractVector{T}, quire = Quire(T))
+function solve_quire(LM::LUMatrix{T}, v::AbstractVector{T}, quire = Quire(T)) where {T}
     M = LM.m
     p = LM.p
     #first, solve the lower matrix against the permuted values in the vector.
@@ -86,7 +86,7 @@ function solve_quire{T}(LM::LUMatrix{T}, v::AbstractVector{T}, quire = Quire(T))
     solve_quire(UpperTriangular(M), res, quire)
 end
 
-function lu_factors!{T}(M::AbstractMatrix{T}, quire = Quire(T))::LUMatrix{T}
+function lu_factors!(M::AbstractMatrix{T}, quire = Quire(T))::LUMatrix{T} where {T}
     # lufact_quire is only going to work on square matrices at this time.
     # this returns an LU factorized A along with a pivot permutation.
     m, n = size(M)
@@ -150,7 +150,7 @@ function lu_factors!{T}(M::AbstractMatrix{T}, quire = Quire(T))::LUMatrix{T}
     LUMatrix(M, pivot_list)
 end
 
-function solve_quire{T}(A::AbstractMatrix{T}, B::AbstractVector{T}, quire = Quire(T))
+function solve_quire(A::AbstractMatrix{T}, B::AbstractVector{T}, quire = Quire(T)) where {T}
     m, n = size(A)
     if m == n
         if istril(A)
@@ -168,7 +168,7 @@ function solve_quire{T}(A::AbstractMatrix{T}, B::AbstractVector{T}, quire = Quir
     throw(ArgumentError("currently, nonsquare matrices are not supported"))
 end
 
-function solve_quire_refine{T}(A::AbstractMatrix{T}, B::AbstractVector{T})
+function solve_quire_refine(A::AbstractMatrix{T}, B::AbstractVector{T}) where {T}
     res = A \ B
     res = refine(res, A, B)
     res = refine(res, A, B)

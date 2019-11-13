@@ -5,7 +5,7 @@ const __imag_quire = Quire(Posit{32,2})
 
 #this is a temporary shim to achieve some BLAS calculations
 
-Base.sqrt{N,ES}(x::Posit{N,ES}) = Posit{N,ES}(Float64(x))
+Base.sqrt(x::Posit{N,ES}) where {N, ES} = Posit{N,ES}(Float64(x))
 
 #this function is going to be called a lot.
 
@@ -16,7 +16,7 @@ Base.sqrt{N,ES}(x::Posit{N,ES}) = Posit{N,ES}(Float64(x))
   been performed.
 
 """
-function naked_dot{N,ES}(x::AbstractArray{Posit{N,ES}}, y::AbstractArray{Posit{N,ES}})
+function naked_dot(x::AbstractArray{Posit{N,ES}}, y::AbstractArray{Posit{N,ES}}) where {N, ES}
     accumulator = zero(Posit{N,ES})
     zero!(__real_quire)
     for idx = 1:length(x)
@@ -25,7 +25,7 @@ function naked_dot{N,ES}(x::AbstractArray{Posit{N,ES}}, y::AbstractArray{Posit{N
     accumulator
 end
 
-function naked_dot{N,ES}(x::AbstractArray{Complex{Posit{N,ES}}}, y::AbstractArray{Complex{Posit{N,ES}}})
+function naked_dot(x::AbstractArray{Complex{Posit{N,ES}}}, y::AbstractArray{Complex{Posit{N,ES}}}) where {N, ES}
   zero!(__real_quire)
   zero!(__imag_quire)
   real_accumulator = zero(Posit{N,ES})
@@ -48,7 +48,7 @@ end
   been performed.  The scale applies to the second vector.
 
 """
-function naked_dot{T<:Posit}(x::AbstractArray{T}, y::AbstractArray{T}, sc::T, seed_1::T = zero(T), seed_2::T = zero(T))
+function naked_dot(x::AbstractArray{T}, y::AbstractArray{T}, sc::T, seed_1::T = zero(T), seed_2::T = zero(T)) where {T<:Posit}
     zero!(__real_quire)
     accumulator = fdp!(__real_quire, seed_1, seed_2)
     for idx = 1:length(x)
@@ -57,13 +57,13 @@ function naked_dot{T<:Posit}(x::AbstractArray{T}, y::AbstractArray{T}, sc::T, se
     accumulator
 end
 
-@generated function naked_dot{T<:Posit, C}(
+@generated function naked_dot(
     x::AbstractArray{Complex{T}},
     y::AbstractArray{Complex{T}},
     sc::T,
     seed_1::Complex{T} = zero(Complex{T}),
     seed_2::Complex{T} = zero(Complex{T}),
-    ::Type{Val{C}} = Val{:noconj})
+    ::Type{Val{C}} = Val{:noconj}) where {T<:Posit, C}
 
   if C == :conj
     main_code = quote
@@ -101,7 +101,7 @@ end
   end
 end
 
-function naked_dot{T<:Posit}(x::AbstractArray{Complex{T}}, y::AbstractArray{Complex{T}}, sc::Complex{T})
+function naked_dot(x::AbstractArray{Complex{T}}, y::AbstractArray{Complex{T}}, sc::Complex{T}) where {T<:Posit}
   zero!(__real_quire)
   zero!(__imag_quire)
   real_accumulator = zero(T)

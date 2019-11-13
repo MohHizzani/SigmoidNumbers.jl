@@ -8,7 +8,7 @@ include("convert.jl")
 include("comparison.jl")
 
 #empty constructor
-(::Type{Valid{N,ES}}){N,ES}() = Valid{N,ES}(reinterpret(Vnum{N,ES}, zero(@UInt)), reinterpret(Vnum{N,ES}, zero(@UInt)))
+Valid{N,ES}() where {N,ES} = Valid{N,ES}(reinterpret(Vnum{N,ES}, zero(@UInt)), reinterpret(Vnum{N,ES}, zero(@UInt)))
 
 include("macros.jl")
 include("addsub.jl")

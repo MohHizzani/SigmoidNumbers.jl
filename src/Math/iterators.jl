@@ -2,26 +2,26 @@
 
 import Base: next, start, done, size
 
-increment{N, ES, mode}(::Type{Sigmoid{N, ES, mode}}) = (@signbit) >> (N - 1)
+increment(::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = (@signbit) >> (N - 1)
 
-@generated function next{N, ES, mode}(x::Sigmoid{N, ES, mode})
+@generated function next(x::Sigmoid{N, ES, mode}) where {N, ES, mode}
   inc = increment(Sigmoid{N, ES, mode})
   :(reinterpret(Sigmoid{N, ES, mode}, @u(x) + $inc))
 end
 
-@generated function prev{N, ES, mode}(x::Sigmoid{N, ES, mode})
+@generated function prev(x::Sigmoid{N, ES, mode}) where {N, ES, mode}
   inc = increment(Sigmoid{N, ES, mode})
   :(reinterpret(Sigmoid{N, ES, mode}, @u(x) - $inc))
 end
 
-start{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}}) = T(Inf)
-next{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}}, state) = (state, next(state))
+start(T::Type{Sigmoid{N, ES, mode}})  where {N, ES, mode} = T(Inf)
+next(T::Type{Sigmoid{N, ES, mode}}, state) where {N, ES, mode} = (state, next(state))
 
-@generated function done{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}}, state)
+@generated function done(T::Type{Sigmoid{N, ES, mode}}, state) where {N, ES, mode}
   last_element = reinterpret(Sigmoid{N, ES, mode}, (@signbit) - increment(Sigmoid{N, ES, mode}))
   :(state == $last_element)
 end
 
-size{N, ES, mode}(T::Type{Sigmoid{N, ES, mode}}) = 1 << N
+size(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = 1 << N
 
 export prev

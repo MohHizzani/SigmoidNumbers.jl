@@ -4,7 +4,7 @@
 ################################################################################
 ## GBMV - general band matrix vector multiply
 
-function BLAS.gbmv!{T<:Posit}(tA::Char, m::Integer, kl::Integer, ku::Integer, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::Vector{T})
+function BLAS.gbmv!(tA::Char, m::Integer, kl::Integer, ku::Integer, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::Vector{T}) where {T<:Posit}
     if tA == 'N' || tA == 'n'
         ngbmv!(m, kl, ku, alpha, A, x, beta, y)
     elseif tA == 'T' || tA == 't' || tA == "C" || tA == "c"
@@ -14,7 +14,7 @@ function BLAS.gbmv!{T<:Posit}(tA::Char, m::Integer, kl::Integer, ku::Integer, al
     end
 end
 
-function BLAS.gbmv!{N,ES}(tA::Char,
+function BLAS.gbmv!(tA::Char,
         m::Integer,
         kl::Integer,
         ku::Integer,
@@ -22,7 +22,7 @@ function BLAS.gbmv!{N,ES}(tA::Char,
         A::Matrix{Complex{Posit{N,ES}}},
         x::Vector{Complex{Posit{N,ES}}},
         beta::PositOrComplex{N,ES},
-        y::Vector{Complex{Posit{N,ES}}})
+        y::Vector{Complex{Posit{N,ES}}}) where {T<:Posit}
 
     println("using special blas!")
 
@@ -37,7 +37,7 @@ function BLAS.gbmv!{N,ES}(tA::Char,
     end
 end
 
-function ngbmv!{N, ES}(
+function ngbmv!(
     m::Integer,
     kl::Integer,
     ku::Integer,
@@ -45,7 +45,7 @@ function ngbmv!{N, ES}(
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}})
+    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit}
 
     #dimension checking.
     if (size(A, 2) != length(x))
@@ -60,7 +60,7 @@ function ngbmv!{N, ES}(
     end
 end
 
-function tgbmv!{N,ES}(
+function tgbmv!(
     m::Integer,
     kl::Integer,
     ku::Integer,
@@ -68,7 +68,7 @@ function tgbmv!{N,ES}(
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}})
+    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit}
 
     #dimension checking.
     if (size(A, 1) != length(x))
@@ -87,7 +87,7 @@ function tgbmv!{N,ES}(
     end
 end
 
-function cgbmv!{N,ES}(
+function cgbmv!(
     m::Integer,
     kl::Integer,
     ku::Integer,
@@ -95,7 +95,7 @@ function cgbmv!{N,ES}(
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}})
+    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit}
 
     #dimension checking.
     if (size(A, 1) != length(x))
@@ -115,7 +115,7 @@ end
 ################################################################################
 ## GEMV - general matrix vector multiply
 
-function BLAS.gemv!{T<:Posit}(tA::Char, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::Vector{T})
+function BLAS.gemv!(tA::Char, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::Vector{T}) where {T<:Posit}
 
     if tA == 'N' || tA == 'n'
         ngemv!(alpha, A, x, beta, y)
@@ -126,12 +126,12 @@ function BLAS.gemv!{T<:Posit}(tA::Char, alpha::T, A::Matrix{T}, x::Vector{T}, be
     end
 end
 
-function BLAS.gemv!{N,ES}(tA::Char,
+function BLAS.gemv!(tA::Char,
         alpha::PositOrComplex{N,ES},
         A::Matrix{Complex{Posit{N,ES}}},
         x::Vector{Complex{Posit{N,ES}}},
         beta::PositOrComplex{N,ES},
-        y::Vector{Complex{Posit{N,ES}}})
+        y::Vector{Complex{Posit{N,ES}}}) where {N, ES}
 
     if tA == 'N' || tA == 'n'
         ngemv!(alpha, A, x, beta, y)
@@ -146,12 +146,12 @@ end
 
 ################################################################################
 
-function ngemv!{N,ES}(
+function ngemv!(
     alpha::PositOrComplex{N,ES},
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}})
+    y::Vector{<:PositOrComplex{N,ES}}) where {N, ES}
 
     #dimension checking.
     if (size(A, 2) != length(x))
@@ -166,12 +166,12 @@ function ngemv!{N,ES}(
     end
 end
 
-function tgemv!{N,ES}(
+function tgemv!(
     alpha::PositOrComplex{N,ES},
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}})
+    y::Vector{<:PositOrComplex{N,ES}}) where {N, ES}
 
     #dimension checking.
     if (size(A, 1) != length(x))
@@ -186,12 +186,12 @@ function tgemv!{N,ES}(
     end
 end
 
-function cgemv!{N,ES}(
+function cgemv!(
     alpha::PositOrComplex{N,ES},
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}})
+    y::Vector{<:PositOrComplex{N,ES}}) where {N, ES}
 
     #dimension checking.
     if (size(A, 1) != length(x))

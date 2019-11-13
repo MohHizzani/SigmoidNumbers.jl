@@ -3,7 +3,7 @@
 #  this code was funded by Etaphase, inc, as part of DARPA TRADES program
 #  award number BAA-16-39
 
-doc"""
+@doc """
   SigmoidNumbers::Quire
 
   represents the 'quire' data structure.  This is a scratchpad of unsigned
@@ -13,7 +13,7 @@ doc"""
   Currently, no shortcut operations are supported.
 """
 
-type Quire
+struct Quire
   fixed_point_value::Vector{UInt64}
   infinity::Bool
 end
@@ -25,11 +25,11 @@ Base.isinf(q::Quire) = q.infinity
 iszero(q::Quire) = mapreduce((n) -> (n == zero(UInt64)), &, true, q.fixed_point_value )
 
 #a few convenience functions.
-maximum_exponent{N,ES}(::Type{Posit{N,ES}}) = (2^(ES) * N - 2)
-minimum_exponent{N,ES}(::Type{Posit{N,ES}}) = -(2^(ES) * N - 2)
+maximum_exponent(::Type{Posit{N,ES}}) where {N,ES} = (2^(ES) * N - 2)
+minimum_exponent(::Type{Posit{N,ES}}) where {N,ES} = -(2^(ES) * N - 2)
 
 #create a zeroed quire.
-function (::Type{Quire}){N,ES}(::Type{Posit{N,ES}})
+function Quire(::Type{Posit{N,ES}}) where {N,ES}
   # IN THE FUTURE:
   # calculate the  number of digits we'll need.  The top exponent is going to be
   # 2^(ES) * (N - 2).  Double that and you get 2^(ES + 1) * (N - 2)..  Then add padding.
@@ -40,11 +40,14 @@ function (::Type{Quire}){N,ES}(::Type{Posit{N,ES}})
   Quire(zeros(UInt64, 64), false)
 end
 
-type fquire{F}; q::F; end
-(::Type{Quire})(::Type{Float64}) = fquire{Float64}(zero(Float64))
-(::Type{Quire})(::Type{Float32}) = fquire{Float32}(zero(Float32))
+struct fquire{F}
+  q::F
+end
 
-zero!{T}(q::fquire{T}) = q.q = zero(T)
+Quire(::Type{Float64}) = fquire{Float64}(zero(Float64))
+Quire(::Type{Float32}) = fquire{Float32}(zero(Float32))
+
+zero!(q::fquire{T}) where {T} = q.q = zero(T)
 #zeroes out the fused dot product accumulator.  Just throw out the old array.
 function zero!(q::Quire)
   q.infinity = false
@@ -53,13 +56,13 @@ function zero!(q::Quire)
   end
 end
 
-doc"""
+@doc """
   inf!(q::Quire) forces the quire to carry an infinite value.
 """
 inf!(q::Quire) = (q.infinity = true; q)
-inf!{T}(q::fquire{T}) = (q.q = T(Inf); q)
+inf!(q::fquire{T}) where {T} = (q.q = T(Inf); q)
 
-doc"""
+@doc """
   isnegative(q::Quire) checks if the quire contains a negative value.
 """
 isnegative(q::Quire) = (last(q.fixed_point_value) & 0x8000_0000_0000_0000) != 0
@@ -67,7 +70,7 @@ isnegative(q::Quire) = (last(q.fixed_point_value) & 0x8000_0000_0000_0000) != 0
 #this function builds a posit value based on some passed sign/exponent/fraction
 #parameters.
 
-function (::Type{Posit{N,0}}){N}(sign::Bool, exp::Int64, frac::UInt64)
+function Posit{N,0}(sign::Bool, exp::Int64, frac::UInt64) where {N}
   frac = frac >> 3
   #In both positive and negative cases, there's a straightforward translation of
   #exponent to the requisite shift.
@@ -84,7 +87,7 @@ function (::Type{Posit{N,0}}){N}(sign::Bool, exp::Int64, frac::UInt64)
   __round(reinterpret(Posit{N,0}, frac))
 end
 
-function (::Type{Posit{N,ES}}){N,ES}(sign::Bool, exp::Int64, frac::UInt64)
+function Posit{N,ES}(sign::Bool, exp::Int64, frac::UInt64) where {N,ES}
 
   (exp < -2048) && return zero(Posit{N,ES})
 
@@ -114,14 +117,14 @@ end
 # an iterator that iterates over the quire indices and returns the fixed point
 # cell contents.
 
-immutable __p2quire_iter
+struct __p2quire_iter
   sgn::Bool
   exp::Int64
   frc::UInt64
   zero::Bool
 end
 
-__p2quire_iter{N,ES}(p::Posit{N,ES}) = __p2quire_iter(posit_components(p)..., p == zero(Posit{N,ES}))
+__p2quire_iter(p::Posit{N,ES}) where {N,ES} = __p2quire_iter(posit_components(p)..., p == zero(Posit{N,ES}))
 
 #return the starting state, which is just index 1.
 Base.start(pi::__p2quire_iter) = 1
@@ -227,7 +230,7 @@ function positvals_from(q::Quire)
 end
 
 
-function (::Type{Posit{N,ES}}){N,ES}(q::Quire)
+function Posit{N,ES}(q::Quire) where {N,ES}
   #exceptional value handling:
   isinf(q) && return Posit{N,ES}(Inf)
 
@@ -240,7 +243,7 @@ function (::Type{Posit{N,ES}}){N,ES}(q::Quire)
 
 end
 
-doc"""
+@doc """
   posit_components breaks up a posit into components (sign, exp, frac)
 
   frac is in 2's complement.  This representation corresponds to: (-1^sign) * 2^exp + (2^exp * (1.frac))
@@ -268,9 +271,9 @@ end
 ################################################################################
 ## QUIRE FUNCTIONS
 
-set!{T}(q::fquire{T}, x::T) = (q.q = x; x)
+set!(q::fquire{T}, x::T) where {T} = (q.q = x; x)
 
-function set!{N,ES}(acc::Quire, x::Posit{N,ES})
+function set!(acc::Quire, x::Posit{N,ES}) where {N,ES}
   #shortcut evaluation of infinity.
   isinf(x) && return inf!(acc)
   acc.infinity = false
@@ -281,8 +284,8 @@ function set!{N,ES}(acc::Quire, x::Posit{N,ES})
   x
 end
 
-add!{T}(q::fquire{T}, x::T) = (q.q += x; q.q)
-function add!{N,ES}(acc::Quire, x::Posit{N,ES})
+add!(q::fquire{T}, x::T) where {T} = (q.q += x; q.q)
+function add!(acc::Quire, x::Posit{N,ES}) where {N,ES}
 
   if isinf(x)
     isinf(acc) && throw(NaNError)
@@ -300,8 +303,8 @@ function add!{N,ES}(acc::Quire, x::Posit{N,ES})
   Posit{N,ES}(acc)
 end
 
-fdp!{T}(q::fquire{T}, a::T, b::T) = (q.q = fma(a, b, q.q); q.q)
-function fdp!{N,ES}(acc::Quire, a::Posit{N,ES}, b::Posit{N,ES})
+fdp!(q::fquire{T}, a::T, b::T) where {T} = (q.q = fma(a, b, q.q); q.q)
+function fdp!(acc::Quire, a::Posit{N,ES}, b::Posit{N,ES}) where {N,ES}
 
   #intercept exceptional cases.
   if isinf(a)
@@ -422,7 +425,7 @@ function find_lsb(q::Quire)
   digits_so_far
 end
 
-function fdp{N,ES}(v1::Vector{Posit{N,ES}}, v2::Vector{Posit{N,ES}}, q = Quire(Posit{N,ES}))
+function fdp(v1::Vector{Posit{N,ES}}, v2::Vector{Posit{N,ES}}, q = Quire(Posit{N,ES})) where {N,ES}
   zero!(q)
   res = zero(Posit{N,ES})
   for (x,y) in zip(v1, v2)
@@ -431,7 +434,7 @@ function fdp{N,ES}(v1::Vector{Posit{N,ES}}, v2::Vector{Posit{N,ES}}, q = Quire(P
   res
 end
 
-function exact_sum{N,ES}(v1::Vector{Posit{N,ES}}, q = Quire(Posit{N,ES}))
+function exact_sum(v1::Vector{Posit{N,ES}}, q = Quire(Posit{N,ES})) where {N,ES}
   res = zero(Posit{N,ES})
   for x in v1
     res = add!(q, x)
@@ -439,11 +442,11 @@ function exact_sum{N,ES}(v1::Vector{Posit{N,ES}}, q = Quire(Posit{N,ES}))
   res
 end
 
-function exact_mmult{N,ES}(M::Matrix{Posit{N,ES}}, v::Vector{Posit{N,ES}}, q = Quire(Posit{N,ES}))
+function exact_mmult(M::Matrix{Posit{N,ES}}, v::Vector{Posit{N,ES}}, q = Quire(Posit{N,ES})) where {N,ES}
   [fdp(M[idx, :], v, q) for idx in 1:size(M,1)]
 end
 
-function exact_mmult{N,ES}(M1::Matrix{Posit{N,ES}}, M2::Matrix{Posit{N,ES}}, q = Quire(Posit{N,ES}))
+function exact_mmult(M1::Matrix{Posit{N,ES}}, M2::Matrix{Posit{N,ES}}, q = Quire(Posit{N,ES})) where {N,ES}
   [fdp(M1[idx, :], M2[:, jdx], q) for idx in 1:size(M1,1), jdx in 1:size(M2,2)]
 end
 
