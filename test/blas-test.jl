@@ -11,12 +11,12 @@ trim_float(arr::Array{Complex{Float64}}, T::Type{<:FloatFamily}) = Complex{Float
   arr32_1 = Posit{32,1}.(arr64)
 
   #test exact asum with no striding against the julia native asum function.
-  @test Posit{16,0}(BLAS.asum(4, trim_float(arr64, Posit{16,0}), 1)) == BLAS.asum(4, arr16_0, 1)
-  @test Posit{32,1}(BLAS.asum(4, trim_float(arr64, Posit{32,1}), 1)) == BLAS.asum(4, arr32_1, 1)
+  @test Posit{16,0}(asum(4, trim_float(arr64, Posit{16,0}), 1)) == asum(4, arr16_0, 1)
+  @test Posit{32,1}(asum(4, trim_float(arr64, Posit{32,1}), 1)) == asum(4, arr32_1, 1)
 
   #test exact asum with striding
-  @test Posit{16,0}(BLAS.asum(4, trim_float(arr64, Posit{16,0}), 2)) == BLAS.asum(4, arr16_0, 2)
-  @test Posit{32,1}(BLAS.asum(4, trim_float(arr64, Posit{32,1}), 2)) == BLAS.asum(4, arr32_1, 2)
+  @test Posit{16,0}(asum(4, trim_float(arr64, Posit{16,0}), 2)) == asum(4, arr16_0, 2)
+  @test Posit{32,1}(asum(4, trim_float(arr64, Posit{32,1}), 2)) == asum(4, arr32_1, 2)
 end
 
 @testset "blas-level-1-asum-cplx" begin
@@ -28,22 +28,22 @@ end
   arr_c32 = Complex{Float32}.(arr_c64)
 
   delta_p32 = abs(
-    BLAS.asum(4, trim_float(arr_c64, Posit{32,1}), 1) -
-    Float64(BLAS.asum(4, arr_c32_1, 1)))
+    asum(4, trim_float(arr_c64, Posit{32,1}), 1) -
+    Float64(asum(4, arr_c32_1, 1)))
 
   delta_f32 = abs(
-    BLAS.asum(4, trim_float(arr_c64, Float32), 1) -
-    Float64(BLAS.asum(4, arr_c32_1, 1)))
+    asum(4, trim_float(arr_c64, Float32), 1) -
+    Float64(asum(4, arr_c32_1, 1)))
 
   @test delta_p32 < delta_f32
 
   #test exact asum with no striding against the julia native asum function.
-  #@test Posit{16,0}(BLAS.asum(4, trim_float(arr_c64, Posit{16,0}), 1)) == BLAS.asum(4, arr_c16_0, 1)
-  #@test Posit{32,1}(BLAS.asum(4, trim_float(arr_c64, Posit{32,1}), 1)) == BLAS.asum(4, arr_c32_1, 1)
+  #@test Posit{16,0}(asum(4, trim_float(arr_c64, Posit{16,0}), 1)) == asum(4, arr_c16_0, 1)
+  #@test Posit{32,1}(asum(4, trim_float(arr_c64, Posit{32,1}), 1)) == asum(4, arr_c32_1, 1)
 
   #test exact asum with striding
-  #@test Posit{16,0}(BLAS.asum(4, trim_float(arr_c64, Posit{16,0}), 2)) == BLAS.asum(4, arr_c16_0, 2)
-  #@test Posit{32,1}(BLAS.asum(4, trim_float(arr_c64, Posit{32,1}), 2)) == BLAS.asum(4, arr_c32_1, 2)
+  #@test Posit{16,0}(asum(4, trim_float(arr_c64, Posit{16,0}), 2)) == asum(4, arr_c16_0, 2)
+  #@test Posit{32,1}(asum(4, trim_float(arr_c64, Posit{32,1}), 2)) == asum(4, arr_c32_1, 2)
 end
 
 @testset "blas-level-1-dot" begin
@@ -61,6 +61,6 @@ end
   @test Posit{32,1}(trim_float(arra_64, Posit{32,1}) ⋅ trim_float(arrb_64, Posit{32,1})) == arra_32_1 ⋅ arrb_32_1
 
   #test exact asum with striding
-  #@test Posit{16,0}(BLAS.dot(4, trim_float(arr64, Posit{16,0}), 2)) == BLAS.asum(4, arr16_0, 2)
-  #@test Posit{32,1}(BLAS.dot(4, trim_float(arr64, Posit{32,1}), 2)) == BLAS.asum(4, arr32_1, 2)
+  #@test Posit{16,0}(BLAS.dot(4, trim_float(arr64, Posit{16,0}), 2)) == asum(4, arr16_0, 2)
+  #@test Posit{32,1}(BLAS.dot(4, trim_float(arr64, Posit{32,1}), 2)) == asum(4, arr32_1, 2)
 end

@@ -27,7 +27,7 @@ function asum_naive(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, incx::Int
     accumulator
 end
 
-function BLAS.asum(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, incx::Integer) where {N,ES}
+function asum(n::Integer, X::DenseArray{<:PositOrComplex{N,ES}}, incx::Integer) where {N,ES}
 
     #corner case checking.
     (n <= 0 || incx <= 0) && return zero(Posit{N,ES})
