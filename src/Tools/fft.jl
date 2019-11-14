@@ -2,7 +2,7 @@
 
 const TWIDDLE_FACTORS = Dict{Tuple{Type, Integer},Vector}()
 
-import Base: fft, ifft
+# import Base: fft, ifft
 
 #actual meat of the fast fourier transform
 @generated function __fft(v::AbstractVector{Complex{T}}, ::Type{Val{l}}, ::Type{Val{i}}, ::Type{Val{n}}) where {T<:AbstractFloat, l, i, n}

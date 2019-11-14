@@ -1,4 +1,4 @@
-import Base: one, zero, realmax, eps, issubnormal, isnan, isfinite
+import Base: one, zero, eps, issubnormal, isnan, isfinite
 
 one(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = reinterpret(T, @invertbit)
 zero(T::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = reinterpret(T, zero(@UInt))
