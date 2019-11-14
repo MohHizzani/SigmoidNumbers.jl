@@ -61,6 +61,6 @@ end
   @test Posit{32,1}(trim_float(arra_64, Posit{32,1}) ⋅ trim_float(arrb_64, Posit{32,1})) == arra_32_1 ⋅ arrb_32_1
 
   #test exact asum with striding
-  #@test Posit{16,0}(BLAS.dot(4, trim_float(arr64, Posit{16,0}), 2)) == asum(4, arr16_0, 2)
-  #@test Posit{32,1}(BLAS.dot(4, trim_float(arr64, Posit{32,1}), 2)) == asum(4, arr32_1, 2)
+  #@test Posit{16,0}( dot(4, trim_float(arr64, Posit{16,0}), 2)) == asum(4, arr16_0, 2)
+  #@test Posit{32,1}( dot(4, trim_float(arr64, Posit{32,1}), 2)) == asum(4, arr32_1, 2)
 end

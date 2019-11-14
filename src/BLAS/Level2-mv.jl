@@ -4,7 +4,7 @@
 ################################################################################
 ## GBMV - general band matrix vector multiply
 
-function BLAS.gbmv!(tA::Char, m::Integer, kl::Integer, ku::Integer, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::Vector{T}) where {T<:Posit}
+function  gbmv!(tA::Char, m::Integer, kl::Integer, ku::Integer, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::Vector{T}) where {T<:Posit}
     if tA == 'N' || tA == 'n'
         ngbmv!(m, kl, ku, alpha, A, x, beta, y)
     elseif tA == 'T' || tA == 't' || tA == "C" || tA == "c"
@@ -14,7 +14,7 @@ function BLAS.gbmv!(tA::Char, m::Integer, kl::Integer, ku::Integer, alpha::T, A:
     end
 end
 
-function BLAS.gbmv!(tA::Char,
+function  gbmv!(tA::Char,
         m::Integer,
         kl::Integer,
         ku::Integer,
@@ -115,7 +115,7 @@ end
 ################################################################################
 ## GEMV - general matrix vector multiply
 
-function BLAS.gemv!(tA::Char, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::Vector{T}) where {T<:Posit}
+function  gemv!(tA::Char, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::Vector{T}) where {T<:Posit}
 
     if tA == 'N' || tA == 'n'
         ngemv!(alpha, A, x, beta, y)
@@ -126,7 +126,7 @@ function BLAS.gemv!(tA::Char, alpha::T, A::Matrix{T}, x::Vector{T}, beta::T, y::
     end
 end
 
-function BLAS.gemv!(tA::Char,
+function  gemv!(tA::Char,
         alpha::PositOrComplex{N,ES},
         A::Matrix{Complex{Posit{N,ES}}},
         x::Vector{Complex{Posit{N,ES}}},
