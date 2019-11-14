@@ -18,10 +18,10 @@ module SigmoidNumbers
   include("Posits/convert.jl")
   include("Posits/mlfunctions.jl")
 
-  # include("Valids/valids.jl")
+  include("Valids/valids.jl")
 
-  # include("Tools/fft.jl")
-  # include("Tools/ubox.jl")
+  include("Tools/fft.jl")
+  include("Tools/ubox.jl")
 
   include("quire.jl")
   include("fdp-matrixsolve.jl")
