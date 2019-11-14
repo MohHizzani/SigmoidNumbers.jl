@@ -5,6 +5,12 @@ import Base.convert
 
 const IEEEFloat = Union{Float16, Float32, Float64}
 
+Sigmoid{N, ES, mode}(int::I) where {N, ES, mode, I <: Signed} = convert(Sigmoid{N, ES, mode}, int)
+
+Sigmoid{N, ES, mode}(f::F) where {N, ES, mode, F <: IEEEFloat} = convert(Sigmoid{N, ES, mode}, f)
+
+(::Type{F})(x::Sigmoid{N, ES, mode}) where {F <: IEEEFloat, N, ES, mode} = convert(F, x)
+
 function convert(T::Type{Sigmoid{N, ES, mode}}, int::I) where {N, ES, mode, I <: Signed}
   #warn("conversion from integers not yet properly supported! $int")
   #throw(ErrorException("halp"))
