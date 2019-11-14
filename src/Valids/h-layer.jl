@@ -1,3 +1,5 @@
+import Base.bitstring
+
 
 function describe(x::Valid{N, ES}, f = println) where {N,ES}
   isempty(x)    && return string("Valid{$N,$ES}(∅)")                               |> f

@@ -1,5 +1,5 @@
 
-import Base: show
+import Base: show, bitstring
 
  bitstring(x::Sigmoid{N, ES, mode}) where {N, ES, mode} =  bitstring(reinterpret(@UInt, x))[1:N]
 function  bitstring(x::Sigmoid{N, ES, mode}, separator::AbstractString) where {N, ES, mode}
