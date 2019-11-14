@@ -248,7 +248,7 @@ end
 
   frac is in 2's complement.  This representation corresponds to: (-1^sign) * 2^exp + (2^exp * (1.frac))
 """
-function posit_components{N,ES}(x::Posit{N,ES})
+function posit_components(x::Posit{N,ES}) where {N,ES}
   sign = (@u(x) & @signbit) != 0
   inverted = (@u(x) & @invertbit) == 0
 
