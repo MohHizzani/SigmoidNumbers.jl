@@ -1,12 +1,12 @@
 
-import Base: bits, show
+import Base: show
 
-bits(x::Sigmoid{N, ES, mode}) where {N, ES, mode} = bits(reinterpret(@UInt, x))[1:N]
-function bits(x::Sigmoid{N, ES, mode}, separator::AbstractString) where {N, ES, mode}
+ bitstring(x::Sigmoid{N, ES, mode}) where {N, ES, mode} =  bitstring(reinterpret(@UInt, x))[1:N]
+function  bitstring(x::Sigmoid{N, ES, mode}, separator::AbstractString) where {N, ES, mode}
   #we're going to create this as a string array, then join() it at the end.
   stringarray = Vector{String}()
 
-  bitstring = bits(x)
+  bitstring =  bitstring(x)
 
   push!(stringarray, bitstring[1:1])
   seek_idx = 2
@@ -63,7 +63,7 @@ function show(io::IO, x::Sigmoid{N, ES, mode}) where {N, ES, mode}
   elseif N == 64
     print(io, "(0x", hex(innerval,16)[1:16], ")")
   else
-    print(io, "(0b", bits(innerval)[1:N], ")")
+    print(io, "(0b",  bitstring(innerval)[1:N], ")")
   end
 end
 

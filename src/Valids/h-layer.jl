@@ -42,12 +42,12 @@ function describe(x::Vnum{N,ES}, f = println) where {N,ES}
   end
 end
 
-function bits(x::Valid{N,ES}) where {N,ES}
-  string(bits(x.lower),bits(x.upper))
+function  bitstring(x::Valid{N,ES}) where {N,ES}
+  string( bitstring(x.lower), bitstring(x.upper))
 end
 
-function bits(x::Valid{N,ES}, separator::AbstractString) where {N,ES}
-  string(bits(x.lower, separator),"|",bits(x.upper, separator))
+function  bitstring(x::Valid{N,ES}, separator::AbstractString) where {N,ES}
+  string( bitstring(x.lower, separator),"|", bitstring(x.upper, separator))
 end
 
 function show(io::IO, x::Valid{N,ES}) where {N,ES}
