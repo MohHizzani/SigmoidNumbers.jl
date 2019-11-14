@@ -11,13 +11,13 @@ Sigmoid{N, ES, mode}(f::F) where {N, ES, mode, F <: IEEEFloat} = convert(Sigmoid
 
 (::Type{F})(x::Sigmoid{N, ES, mode}) where {F <: IEEEFloat, N, ES, mode} = convert(F, x)
 
-function convert(T::Type{Sigmoid{N, ES, mode}}, int::I) where {N, ES, mode, I <: Signed}
+function Base.convert(T::Type{Sigmoid{N, ES, mode}}, int::I) where {N, ES, mode, I <: Signed}
   #warn("conversion from integers not yet properly supported! $int")
   #throw(ErrorException("halp"))
   convert(T, convert(Float64, int))
 end
 
-@generated function convert(::Type{F}, x::Sigmoid{N, ES, mode}) where {F <: IEEEFloat, N, ES, mode}
+@generated function Base.convert::Type{F}, x::Sigmoid{N, ES, mode}) where {F <: IEEEFloat, N, ES, mode}
   FInt  = Dict(Float16 => UInt16, Float32 => UInt32, Float64 => UInt64)[F]
   fbits = Dict(Float16 => 16    , Float32 => 32,     Float64 => 64)[F]
   ebits = Dict(Float16 => 5     , Float32 => 8,      Float64 => 11)[F]
@@ -79,7 +79,7 @@ end
   end
 end
 
-function convert(::Type{Sigmoid{N, ES, mode}}, f::F) where {N, ES, mode, F <: IEEEFloat}
+function Base.convert::Type{Sigmoid{N, ES, mode}}, f::F) where {N, ES, mode, F <: IEEEFloat}
   #handle the three corner cases of NaN, infinity and zero.
   isnan(f) && throw(NaNError(convert, [Sigmoid{N, ES, mode}, f]))
   isfinite(f) || return reinterpret(Sigmoid{N, ES, mode}, @signbit)
