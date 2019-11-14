@@ -127,13 +127,13 @@ end
 __p2quire_iter(p::Posit{N,ES}) where {N,ES} = __p2quire_iter(posit_components(p)..., p == zero(Posit{N,ES}))
 
 #return the starting state, which is just index 1.
-Base.start(pi::__p2quire_iter) = 1
+start(pi::__p2quire_iter) = 1
 #the quire iterator is finished when the index exceeds the array length.
-Base.done(pi::__p2quire_iter, index::Int64) = (index > 64)
+done(pi::__p2quire_iter, index::Int64) = (index > 64)
 Base.length(pi::__p2quire_iter) = 64
 
 #takes the index, and the iterator object, and returns the corresponding cell.
-function Base.next(pi::__p2quire_iter, index::Int64)
+function next(pi::__p2quire_iter, index::Int64)
 
   pi.zero && return (zero(UInt64), index + 1)
 
