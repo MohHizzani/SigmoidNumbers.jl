@@ -17,6 +17,7 @@ end
 
 
 # TODO: implement unit testing on this function.
+
 @generated function solve_quire(A::LowerTriangular{T}, B::AbstractVector{T}, quire = Quire(T), ::Type{Val{onediag}} = Val{false}) where {T, onediag}
     first_factor, row_factor = if onediag
         :(B[1]), :(tmp)

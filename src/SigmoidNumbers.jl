@@ -25,7 +25,7 @@ module SigmoidNumbers
 
   include("quire.jl")
   include("fdp-matrixsolve.jl")
-  include("quire_solve.jl")
+  # include("quire_solve.jl")
 
   #patching julia's native lu factorization.
   include("LUpatches.jl")
