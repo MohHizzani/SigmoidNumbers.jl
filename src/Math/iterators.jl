@@ -1,6 +1,6 @@
 #iterators.jl - creating iterator convenience types for SigmoidNumbers.
 
-import Base: next, start, done, size
+import Base: size
 
 increment(::Type{Sigmoid{N, ES, mode}}) where {N, ES, mode} = (@signbit) >> (N - 1)
 
