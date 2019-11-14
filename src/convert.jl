@@ -1,7 +1,7 @@
 #sigmoid number conversions.
 
 #let's put these functions here. We'll move them later.
-# import convert
+import Base.convert
 
 const IEEEFloat = Union{Float16, Float32, Float64}
 

@@ -1,6 +1,6 @@
 #Posit have a special conversion mode where you can convert a value to [0,1]
 
-import convert
+import Base.convert
 
 Base.convert(::Type{Posit{N,0}}, bval::Bool) where {N} = reinterpret(Posit{N,0}, bval * (@invertbit))
 function Base.convert(::Type{Bool}, pval::Posit{N,0}) where {N}
