@@ -22,7 +22,7 @@ function  gbmv!(tA::Char,
         A::Matrix{Complex{Posit{N,ES}}},
         x::Vector{Complex{Posit{N,ES}}},
         beta::PositOrComplex{N,ES},
-        y::Vector{Complex{Posit{N,ES}}}) where {T<:Posit}
+        y::Vector{Complex{Posit{N,ES}}}) where {T<:Posit} where {N,ES}
 
     println("using special blas!")
 
@@ -45,7 +45,7 @@ function ngbmv!(
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit}
+    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit} where {N,ES}
 
     #dimension checking.
     if (size(A, 2) != length(x))
@@ -68,7 +68,7 @@ function tgbmv!(
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit}
+    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit} where {N,ES}
 
     #dimension checking.
     if (size(A, 1) != length(x))
@@ -95,7 +95,7 @@ function cgbmv!(
     A::Matrix{<:PositOrComplex{N,ES}},
     x::Vector{<:PositOrComplex{N,ES}},
     beta::PositOrComplex{N,ES},
-    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit}
+    y::Vector{<:PositOrComplex{N,ES}}) where {T<:Posit} where {N,ES}
 
     #dimension checking.
     if (size(A, 1) != length(x))
