@@ -1,6 +1,6 @@
 
 #special type which represents an LUMatrix with permutations
-immutable LUMatrix{T}
+struct LUMatrix{T}
     m::Matrix{T}
     p::Vector{Int64}
 end
