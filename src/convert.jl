@@ -5,6 +5,12 @@
 
 const IEEEFloat = Union{Float16, Float32, Float64}
 
+Sigmoid{N, ES, mode}(int::I) where {N, ES, mode, I <: Signed} = convert(Sigmoid{N, ES, mode}, int)
+
+Sigmoid{N, ES, mode}(f::F) where {N, ES, mode, F <: IEEEFloat} = convert(Sigmoid{N, ES, mode}, f)
+
+(::Type{F})(x::Sigmoid{N, ES, mode}) where {F <: IEEEFloat, N, ES, mode} = convert(F, x)
+
 function convert(T::Type{Sigmoid{N, ES, mode}}, int::I) where {N, ES, mode, I <: Signed}
   #warn("conversion from integers not yet properly supported! $int")
   #throw(ErrorException("halp"))
@@ -82,7 +88,7 @@ function convert(::Type{Sigmoid{N, ES, mode}}, f::F) where {N, ES, mode, F <: IE
   __round(build_numeric(Sigmoid{N, ES, mode}, fptrip(f)...))
 end
 
-@generated function Sigmoid(i::UI) where {N, ES, mode, UI <: Unsigned}
+@generated function Sigmoid{N, ES, mode}(i::UI) where {N, ES, mode, UI <: Unsigned}
   #conversion from unsigned integer will be interpreted as a desire to convert
   #logical representation; conversion from signed integer will be interpreted
   #as a desire to convert the semantic value.
