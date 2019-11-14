@@ -1,43 +1,43 @@
 
 import Base: show, bitstring
-import Base.bitstring
+# import Base.bitstring
 
-Base.bitstring(x::Sigmoid{N, ES, mode}) where {N, ES, mode} =  bitstring(reinterpret(@UInt, x))[1:N]
+bitstring(x::Sigmoid{N, ES, mode}) where {N, ES, mode} =  bitstring(reinterpret(@UInt, x))[1:N]
 
-function Base.bitstring(x::Sigmoid{N, ES, mode}, separator::AbstractString) where {N, ES, mode}
+function bitstring(x::Sigmoid{N, ES, mode}, separator::AbstractString) where {N, ES, mode}
   #we're going to create this as a string array, then join() it at the end.
   stringarray = Vector{String}()
 
-  bitstring =  bitstring(x)
+  bits =  bitstring(x)
 
-  push!(stringarray, bitstring[1:1])
+  push!(stringarray, bits[1:1])
   seek_idx = 2
   term_idx = N - (mode == :ubit) #store the index of termination.
 
   #calculate how many regime bits there are
   r_length = regimebits(x)
 
-  push!(stringarray, bitstring[seek_idx:(seek_idx + r_length - 1)])
+  push!(stringarray, bits[seek_idx:(seek_idx + r_length - 1)])
   seek_idx += r_length
 
   (seek_idx > term_idx) && @goto finish
 
   if (ES > 0)
     if ((seek_idx + ES) < term_idx)
-      push!(stringarray, bitstring[seek_idx:seek_idx + ES - 1])
+      push!(stringarray, bits[seek_idx:seek_idx + ES - 1])
       seek_idx += ES
     else
-      push!(stringarray, bitstring[seek_idx:term_idx])
+      push!(stringarray, bits[seek_idx:term_idx])
       @goto finish
     end
   end
 
-  push!(stringarray, bitstring[seek_idx:term_idx])
+  push!(stringarray, bits[seek_idx:term_idx])
 
   @label finish
 
   if mode == :ubit
-    push!(stringarray, bitstring[end:end])
+    push!(stringarray, bits[end:end])
   end
 
   return join(stringarray, separator)
