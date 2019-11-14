@@ -351,7 +351,7 @@ const division_right_zero = Dict((:guess, :guess)                 => :(Sigmoid{N
 
         lhs == zero(Sigmoid{N, ES, lhs_mode}) && return $division_left_zero_code
 
-    const cq_mask = promote(-one(@UInt))
+    cq_mask = promote(-one(@UInt))
 
     #generate the lhs and rhs subcomponents.  Unlike multiplication, however,
     #we want there to 'always be a hidden bit', so we should use the "numeric" method.
