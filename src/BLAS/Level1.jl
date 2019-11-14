@@ -70,7 +70,7 @@ function dot_naive(n::Integer, x::AbstractArray{T}, incx::Integer, y::AbstractAr
     accumulator
 end
 
-function Base.dot(n::Integer, x::AbstractArray{T}, incx::Integer, y::AbstractArray{T}, incy::Integer) where {T<:Posit}
+function dot(n::Integer, x::AbstractArray{T}, incx::Integer, y::AbstractArray{T}, incy::Integer) where {T<:Posit}
     (n <= 0 || incx <= 0) && return zero(T)
     (n * incx) > length(x) && throw(BoundsError(y, n * incx))
     (n * incy) > length(y) && throw(BoundsError(y, n * incy))
@@ -100,7 +100,7 @@ function dot_naive(n::Integer, x::AbstractArray{Complex{T}}, incx::Integer, y::A
     accumulator
 end
 
-function Base.dot(n::Integer, x::AbstractArray{Complex{T}}, incx::Integer, y::AbstractArray{Complex{T}}, incy::Integer) where {T<:Posit}
+function dot(n::Integer, x::AbstractArray{Complex{T}}, incx::Integer, y::AbstractArray{Complex{T}}, incy::Integer) where {T<:Posit}
     (n <= 0 || incx <= 0) && return zero(T)
     (n * incx) > length(x) && throw(BoundsError(y, n * incx))
     (n * incy) > length(y) && throw(BoundsError(y, n * incy))
@@ -129,7 +129,7 @@ function dot_naive(x::AbstractArray{T}, y::AbstractArray{T}) where {T<:Posit}
     accumulator
 end
 
-function Base.dot(x::AbstractArray{<:PositOrComplex{N,ES}}, y::AbstractArray{<:PositOrComplex{N,ES}}) where {N,ES}
+function dot(x::AbstractArray{<:PositOrComplex{N,ES}}, y::AbstractArray{<:PositOrComplex{N,ES}}) where {N,ES}
     if length(x) != length(y)
         throw(length(x) > length(y) ? BoundsError(x, length(y) + 1) : BoundsError(y, length(x) + 1))
     end
