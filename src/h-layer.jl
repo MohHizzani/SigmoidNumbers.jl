@@ -1,8 +1,10 @@
 
 import Base: show, bitstring
+import Base.bitstring
 
- bitstring(x::Sigmoid{N, ES, mode}) where {N, ES, mode} =  bitstring(reinterpret(@UInt, x))[1:N]
-function  bitstring(x::Sigmoid{N, ES, mode}, separator::AbstractString) where {N, ES, mode}
+Base.bitstring(x::Sigmoid{N, ES, mode}) where {N, ES, mode} =  bitstring(reinterpret(@UInt, x))[1:N]
+
+function Base.bitstring(x::Sigmoid{N, ES, mode}, separator::AbstractString) where {N, ES, mode}
   #we're going to create this as a string array, then join() it at the end.
   stringarray = Vector{String}()
 
