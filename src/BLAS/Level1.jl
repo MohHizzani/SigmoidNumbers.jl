@@ -1,6 +1,6 @@
 
 #ASUM: BLAS function for calculating sum of absolute values.
-doc"""
+@doc """
   asum_naive(n::Integer, X::Array{Posit}, stride::Integer)
 
   calculates the sum of the first n strided values in X.
