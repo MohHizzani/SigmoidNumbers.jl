@@ -47,7 +47,7 @@ struct ∞; end
 struct ∞n; end
 
 Base.:-(::Type{∞}) = ∞n
-Base.convert(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞}) where {N, ES, mode} = T(Inf)
-Base.convert(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞n}) where {N, ES, mode} = T(Inf)
+convert(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞}) where {N, ES, mode} = T(Inf)
+convert(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞n}) where {N, ES, mode} = T(Inf)
 
 export ∞
