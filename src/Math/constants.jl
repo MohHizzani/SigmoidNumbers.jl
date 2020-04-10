@@ -52,3 +52,8 @@ convert(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞}) where {N, ES, mode} = T(Inf)
 convert(T::Type{Sigmoid{N, ES, mode}}, ::Type{∞n}) where {N, ES, mode} = T(Inf)
 
 export ∞
+
+
+Base.typemin(p::Type{S}) where {S <: Sigmoid} = minneg(p)
+
+Base.typemax(p::Type{S}) where {S <: Sigmoid} = maxpos(p)
