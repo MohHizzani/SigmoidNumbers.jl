@@ -12,4 +12,21 @@ Two types of Sigmoid Numbers
 2.  Estimated Sigmoid Numbers (Posits)
 
 
+## Add
 
+In order to add SigmoidNumbers simply from a Julia REPL
+
+```julia
+julia> ] add SigmoidNumbers
+```
+
+To use it
+
+```julia
+julia> using SigmoidNumbers
+
+julia> P1 = Posit{16,0}; #16 is number of bits, 0 is ES
+
+julia> a = P1(0)
+Posit{16,0}(0x0000)
+```
