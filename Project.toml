@@ -2,3 +2,6 @@ name = "SigmoidNumbers"
 uuid = "5f9c4118-ff96-4443-8e36-82746d603364"
 authors = ["Mohammad Hizzani <moh.hizzani@gmail.com>"]
 version = "0.1.0"
+
+[compat]
+julia = "~1.0"
